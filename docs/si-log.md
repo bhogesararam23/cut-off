@@ -14,6 +14,7 @@ Append-only. No AI-generated images or video are used.
 | 2026-11-14 | AI coding assistant | Landslide detection: HV-drop candidates, threshold guess, small-patch removal, voting across pairs, polygons with statistics | `pipeline/cutoff/detect.py`, tests | Synthetic-data unit tests pass |
 | 2026-11-14 | AI coding assistant | Output writers: HV and change PNG overlays in lon/lat, simplified GeoJSON, JSON helpers; shared with the mock generator | `pipeline/cutoff/export.py`, `mock.py`, tests | Unit tests pass; mock files unchanged byte for byte |
 | 2026-11-14 | AI coding assistant | Processing run (all pairs, baseline, time series, every output file), granule listing, command line | `pipeline/cutoff/run.py`, `fetch.py`, `__main__.py`, tests | End-to-end test on a synthetic scene; listing checked against the live archive |
+| 2026-11-14 | AI coding assistant | Web app shell: all app text, data loading with per-file errors, top bar, pair selector, About window, credits, side panel and phone bottom sheet with seven tabs, Overview, Why radar, Limits and Timeline tabs, security headers file | `web/src/**`, `web/public/_headers`, tests | Type check, build, unit tests; layout checked in the browser at laptop and phone widths |
 
 Summary for the submission form (update at the end):
 - Tools: AI chat assistant, AI coding assistant.

@@ -1,33 +1,57 @@
-import { useEffect, useState } from 'react';
-import type { EventInfo } from './lib/types.ts';
+import { AboutModal } from './components/AboutModal.tsx';
+import { BottomSheet } from './components/BottomSheet.tsx';
+import { Footer } from './components/Footer.tsx';
+import { MockBanner } from './components/MockBanner.tsx';
+import { TabbedPanel } from './components/SidePanel.tsx';
+import { TopBar } from './components/TopBar.tsx';
+import { AppStateProvider } from './lib/AppState.tsx';
+import { DataProvider } from './lib/DataContext.tsx';
+import { DESKTOP_QUERY, useMedia } from './lib/useMedia.ts';
 
-const DATA = '/data/panama-2026';
+function MapArea() {
+  return <div className="h-full w-full bg-slate-800" />; // replaced by the map in the next step
+}
+
+function Layout() {
+  const desktop = useMedia(DESKTOP_QUERY);
+  // Only one panel is mounted at a time, so ids and tab order are never duplicated.
+  return (
+    <div className="flex h-dvh flex-col bg-slate-50 text-slate-900">
+      <MockBanner />
+      <TopBar />
+      <main className="relative flex min-h-0 flex-1">
+        {desktop ? (
+          <>
+            <div className="min-w-0 flex-1">
+              <MapArea />
+            </div>
+            <aside className="w-[400px] shrink-0 border-l border-slate-200 bg-white">
+              <TabbedPanel />
+            </aside>
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-x-0 top-0 bottom-[35%]">
+              <MapArea />
+            </div>
+            <BottomSheet>
+              <TabbedPanel />
+            </BottomSheet>
+          </>
+        )}
+      </main>
+      <Footer />
+      <AboutModal />
+    </div>
+  );
+}
 
 export default function App() {
-  const [event, setEvent] = useState<EventInfo | null>(null);
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    fetch(`${DATA}/event.json`)
-      .then((r) => (r.ok ? (r.json() as Promise<EventInfo>) : Promise.reject(new Error('missing'))))
-      .then(setEvent)
-      .catch(() => setFailed(true));
-  }, []);
-
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
-      {event?.mock && (
-        <div role="alert" className="bg-red-700 px-4 py-2 text-center text-sm font-semibold text-white">
-          MOCK DATA: not real results. This screen uses made-up data while the real radar processing finishes.
-        </div>
-      )}
-      <header className="border-b border-slate-200 bg-white px-4 py-3">
-        <h1 className="text-lg font-semibold">Cut Off</h1>
-        <p className="text-sm text-slate-600">{event ? event.name : 'Loading…'}</p>
-      </header>
-      <main className="p-4">
-        {failed && <p className="text-sm text-red-700">Could not load event.json. The rest of the app still works.</p>}
-      </main>
-    </div>
+    <DataProvider>
+      <AppStateProvider>
+        <Layout />
+      </AppStateProvider>
+    </DataProvider>
   );
 }
