@@ -369,6 +369,18 @@ def _fold(s: str) -> str:
     return "".join(c for c in unicodedata.normalize("NFKD", s.lower()) if not unicodedata.combining(c)).strip()
 
 
+def reported_place_check(name: str, results: list[CommunityResult]) -> dict:
+    """Find a place named in news reports among the assessed places: an exact name first, then names that contain
+    it as a whole word (OpenStreetMap often says "La Loma de Quebro" where a report says "Quebro")."""
+    target = _fold(name)
+    exact = [r for r in results if _fold(r.place.name) == target]
+    word = re.compile(r"\b" + re.escape(target) + r"\b")
+    partial = [r for r in results if r not in exact and word.search(_fold(r.place.name))]
+    found = exact + partial
+    return {"name": name, "found_in_map": bool(found), "status": found[0].status if found else None,
+            "matches": [{"name": r.place.name, "status": r.status} for r in found]}
+
+
 def community_features(results: list[CommunityResult]) -> list[dict]:
     to_lonlat = _projector(METRIC_CRS, "EPSG:4326")
     feats = []
@@ -426,9 +438,5 @@ def run_access(cfg: dict, root: Path, out: Path | None = None, log: Callable[[st
     stats["communities_cut_off"] = counts["cut_off"]
     write_json(stats_path, stats)
 
-    by_name = {_fold(r.place.name): r for r in results}
-    reported = []
-    for name in cfg.get("reported_cut_off", REPORTED_PLACES):
-        r = by_name.get(_fold(name))
-        reported.append({"name": name, "found_in_map": r is not None, "status": r.status if r else None})
+    reported = [reported_place_check(name, results) for name in cfg.get("reported_cut_off", REPORTED_PLACES)]
     return {"road_km": km, "communities": counts, "skipped_hubs": skipped, "reported_places": reported}

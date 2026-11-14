@@ -14,7 +14,7 @@ NOT_READY = ()
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="cutoff", description=__doc__)
-    parser.add_argument("command", choices=("mock", "check", "list", "run", "validate", "access", "report") + NOT_READY)
+    parser.add_argument("command", choices=("mock", "check", "list", "run", "validate", "access", "report", "osm") + NOT_READY)
     parser.add_argument("--config", help="config file (default: config.json, else config.example.json)")
     parser.add_argument("--root", help="repository root (default: parent of the config file's folder)")
     parser.add_argument("--out", help="output folder (default: 'out' from the config, under the root)")
@@ -25,6 +25,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--allow-uncommitted", action="store_true", help="validate: skip the check that the check points are committed")
     parser.add_argument("--restore", action="store_true", help="validate: put the stored test result back into stats.json without scoring")
     parser.add_argument("--readme", help="report: README file whose results block is rewritten (default: README.md in the root)")
+    parser.add_argument("--pbf", help="osm: the OpenStreetMap extract (default: data/raw/panama-latest.osm.pbf)")
+    parser.add_argument("--osm-bbox", default="-81.15,7.15,-80.15,8.15", help="osm: west,south,east,north of the area to cut out")
     parser.add_argument("--start", default="2026-09-01", help="list: first date to search (UTC)")
     parser.add_argument("--end", default="2026-10-31", help="list: last date to search (UTC)")
     parser.add_argument("--version", action="version", version=__version__)
@@ -72,6 +74,20 @@ def main(argv: list[str] | None = None) -> int:
             print("  WARNING: the baseline flag rate is not lower than after the quake: the signal is weak or the method is wrong here.")
         return 0
 
+    if args.command == "osm":
+        from .osm import extract
+
+        try:
+            west, south, east, north = (float(v) for v in args.osm_bbox.split(","))
+            summary = extract(Path(args.pbf) if args.pbf else root / "data" / "raw" / "panama-latest.osm.pbf",
+                              (west, south, east, north), root / "data" / "raw")
+        except (FileNotFoundError, ValueError) as e:
+            print(f"cannot cut out the map data: {e}", file=sys.stderr)
+            return 1
+        print(f"roads: {summary['roads']} lines {summary['roads_by_class']}")
+        print(f"places: {summary['places']} {summary['places_by_class']}, {summary['places_with_population']} with a population")
+        return 0
+
     if args.command == "report":
         from .report import ReportError, update_readme
 
@@ -98,7 +114,10 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  communities: {c['cut_off']} possibly cut off, {c['reachable']} reachable, {c['unknown']} unknown")
         print("  places reported as cut off in news, compared with this map:")
         for r in summary["reported_places"]:
-            print(f"    {r['name']}: " + (r["status"] if r["found_in_map"] else "not among the mapped places"))
+            if not r["found_in_map"]:
+                print(f"    {r['name']}: not among the mapped places")
+            for m in r["matches"]:
+                print(f"    {r['name']}: {m['name']} is {m['status']}")
         if summary["skipped_hubs"]:
             print(f"  towns left out (not on the road map): {', '.join(summary['skipped_hubs'])}")
         return 0

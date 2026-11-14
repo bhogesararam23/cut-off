@@ -272,3 +272,18 @@ def test_cli_access(tmp_path, capsys):
     assert "km likely blocked" in text and "possibly cut off" in text and "El Cacao" in text
     assert main(["access", "--config", str(tmp_path / "pipeline" / "config.json"), "--out", str(tmp_path / "nowhere")]) == 1
     assert "cannot run access" in capsys.readouterr().err
+
+
+def test_reported_places_match_exact_names_then_whole_word_names():
+    from cutoff.access import CommunityResult, reported_place_check
+
+    def res(name, status):
+        return CommunityResult(Place(None, name, "village", None, (0.0, 0.0)), status, None, "")
+
+    results = [res("La Loma de Quebro", "unknown"), res("Quebrado", "reachable"), res("Arenas", "cut_off"), res("Las Arenas", "reachable")]
+    q = reported_place_check("Quebro", results)
+    assert q["found_in_map"] and q["matches"] == [{"name": "La Loma de Quebro", "status": "unknown"}]      # not "Quebrado"
+    a = reported_place_check("Arenas", results)
+    assert [m["name"] for m in a["matches"]] == ["Arenas", "Las Arenas"] and a["status"] == "cut_off"    # exact name first
+    assert reported_place_check("El Cacao", results) == {"name": "El Cacao", "found_in_map": False, "status": None, "matches": []}
+    assert reported_place_check("QUEBRO", results)["found_in_map"]
