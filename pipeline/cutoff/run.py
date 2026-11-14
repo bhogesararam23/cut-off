@@ -7,6 +7,8 @@ Roads and communities are not made here: the files are written empty, so no mock
 
 from __future__ import annotations
 
+import json
+from dataclasses import replace
 from pathlib import Path
 from typing import Callable
 
@@ -65,7 +67,7 @@ def _series_entries(cfg: dict, pairs: list[dict]) -> list[dict]:
 
 
 def run(cfg: dict, root: Path, out: Path | None = None, work: Path | None = None, pair_ids: list[str] | None = None,
-        clean: bool = False, log: Callable[[str], None] = print) -> dict:
+        clean: bool = False, use_tuned: bool = True, log: Callable[[str], None] = print) -> dict:
     """Process the configured pairs and write every output file. Returns a short summary."""
     root = Path(root)
     out = Path(out) if out else _path(root, cfg["out"])
@@ -76,6 +78,12 @@ def run(cfg: dict, root: Path, out: Path | None = None, work: Path | None = None
         raise FileNotFoundError("these input files are missing (download them first):\n  " + "\n  ".join(missing))
 
     params = DetectParams.from_config(cfg["detect"])
+    tuned_file = work / "tuned.json"
+    if use_tuned and tuned_file.is_file():
+        # the threshold chosen on the tuning half of the check points replaces the starting value
+        tuned = float(json.loads(tuned_file.read_text(encoding="utf-8"))["threshold_db"])
+        params = replace(params, threshold_db=tuned)
+        log(f"using the tuned threshold {tuned:g} dB from the tuning step")
     res = float(cfg["target_res_m"])
     fsize, incidence = int(cfg["filter_size"]), float(cfg["incidence_deg"])
     headings = cfg.get("headings", {})
@@ -95,6 +103,7 @@ def run(cfg: dict, root: Path, out: Path | None = None, work: Path | None = None
     dem = align_to(read_raster(_path(root, cfg["dem"])), shape, transform, crs, Resampling.bilinear)
     slope, aspect = slope_aspect(dem.data, res, res)
     del dem
+    write_raster(work / "slope.tif", Raster(slope, transform, crs))          # kept so the threshold can be tuned later
 
     unknown_by_dir: dict[str, np.ndarray] = {}
 
@@ -122,6 +131,9 @@ def run(cfg: dict, root: Path, out: Path | None = None, work: Path | None = None
             post_rate = flag_rate(cand, elig)
             otsu_first_guess = otsu_threshold(dhv, elig)
         write_raster(work / f"dhv_{p['id']}.tif", Raster(dhv, transform, crs))
+        if p is primary:                                                     # inputs for tuning the threshold
+            write_raster(work / f"hvbefore_{p['id']}.tif", Raster(before, transform, crs))
+            write_raster(work / f"unknown_{p['id']}.tif", Raster(unknown.astype("float32"), transform, crs))
         names = export.png_names(p)
         export.save_png(out / names["before_png"], export.png_hv(export.to_wgs84(before, transform, crs, bbox, res)))
         export.save_png(out / names["after_png"], export.png_hv(export.to_wgs84(after, transform, crs, bbox, res)))

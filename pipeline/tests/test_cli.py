@@ -20,7 +20,7 @@ def test_check_reports_problems(tmp_path, capsys):
     assert "problem" in capsys.readouterr().out
 
 
-@pytest.mark.parametrize("command", ["validate", "access"])
+@pytest.mark.parametrize("command", ["access"])
 def test_unfinished_commands_say_so(command, capsys):
     assert main([command, "--config", CONFIG]) == 2
     assert "not implemented" in capsys.readouterr().err

@@ -25,6 +25,7 @@ Append-only. No AI-generated images or video are used.
 | 2026-11-14 | AI coding assistant | Read-only API: every endpoint with filters and error messages, CORS allowlist, cache and safety headers, generic error handling, docs page | `api/main.py`, `api/tests/test_endpoints.py` | 42 endpoint tests against the mock files; a live call to the health endpoint |
 | 2026-11-14 | AI coding assistant | API security tests: many path-traversal forms, other origins and preflight, non-GET methods, damaged files and crashes (no leaks) | `api/tests/test_security.py` | 440 API tests pass |
 | 2026-11-14 | AI coding assistant | API hosting setup: Render blueprint, runtime/dev requirement split, CI install update | `render.yaml`, `api/requirements*.txt`, `.github/workflows/ci.yml` | Build copy and start rehearsed locally from a runtime-only environment; web app tested against the live API and with the API down |
+| 2026-11-14 | AI coding assistant | Accuracy check: fixed split of check points, threshold tuned on one half only, test half scored once, AUC and detection by size, refusal of a second scoring, check that the points are committed first | `pipeline/cutoff/validate.py`, `run.py`, `__main__.py`, tests | Unit and end-to-end tests on a made-up scene with known answers; no real points scored yet |
 
 Summary for the submission form (update at the end):
 - Tools: AI chat assistant, AI coding assistant.
