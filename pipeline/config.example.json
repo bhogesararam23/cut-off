@@ -22,7 +22,8 @@
     {"id": "t76a", "track": 76, "direction": "ascending", "before": "2026-10-05T10:56:04Z", "after": "2026-10-17T10:56:04Z",
      "before_hv": "data/raw/t76_20261005_HVHV.tif", "after_hv": "data/raw/t76_20261017_HVHV.tif", "granules": []}
   ],
-  "baseline": {"direction": "descending", "before_hv": "data/raw/t40_20260920_HVHV.tif", "after_hv": "data/raw/t40_20261002_HVHV.tif"},
+  "baseline": {"track": 40, "direction": "descending", "before": "2026-09-20T23:45:16Z", "after": "2026-10-02T23:45:16Z",
+               "before_hv": "data/raw/t40_20260920_HVHV.tif", "after_hv": "data/raw/t40_20261002_HVHV.tif"},
   "series": [{"date": "2026-09-27T23:53:35Z", "track": 141, "direction": "descending", "hv": "data/raw/t141_20260927_HVHV.tif"}],
   "points": "data/validation/points.csv",
   "roads": "data/raw/roads.geojson",

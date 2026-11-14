@@ -106,7 +106,7 @@ class Landslide:
 
 def _mean(values: np.ndarray) -> float | None:
     values = values[np.isfinite(values)]
-    return float(values.mean()) if values.size else None
+    return float(values.astype("float64").mean()) if values.size else None
 
 
 def polygonise(keep: np.ndarray, candidates: list[np.ndarray], visibles: list[np.ndarray],
