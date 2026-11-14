@@ -11,6 +11,7 @@ Append-only. No AI-generated images or video are used.
 | 2026-11-14 | AI coding assistant | Mock data generator (made-up data, flagged `mock: true`) | `pipeline/cutoff/mock.py`, files in `web/public/data/panama-2026/` | Format checker, determinism test, viewed in the browser |
 | 2026-11-14 | AI coding assistant | Minimal API health check, web page with mock banner, CI workflow | `api/main.py`, `web/src/App.tsx`, `.github/workflows/ci.yml` | API tests, web build, banner checked in the browser |
 | 2026-11-14 | AI coding assistant | Radar image tools (dB, speckle filters, grid alignment) and terrain tools (slope, aspect, shadow/layover); pinned two older library builds that load on this machine | `pipeline/cutoff/radar.py`, `terrain.py`, tests | Synthetic-data unit tests pass |
+| 2026-11-14 | AI coding assistant | Landslide detection: HV-drop candidates, threshold guess, small-patch removal, voting across pairs, polygons with statistics | `pipeline/cutoff/detect.py`, tests | Synthetic-data unit tests pass |
 
 Summary for the submission form (update at the end):
 - Tools: AI chat assistant, AI coding assistant.
