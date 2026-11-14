@@ -116,7 +116,7 @@ export const C = {
     baselineHeading: 'Does it flag change when nothing happened?',
     baselineText: 'We ran the same method on two passes before the quake (20 Sep vs 2 Oct). It flagged {baseline}% of forested slopes, against {post}% after the quake.',
     context:
-      'For comparison, a 2022 study using C-band radar (Sentinel-1) reached an AUC of about 0.83 in its best case and 0.62–0.68 in a simulated rapid response (Handwerger et al., 2022).',
+      'For comparison, a 2022 study using C-band radar (Sentinel-1) reached an AUC of about 0.83 in its best case, and 0.62–0.68 for one rainfall event when only the first post-event images were used (Handwerger et al., 2022).',
     link: 'Read the full method',
   },
   why: {

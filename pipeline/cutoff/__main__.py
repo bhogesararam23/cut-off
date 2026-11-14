@@ -14,7 +14,7 @@ NOT_READY = ()
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="cutoff", description=__doc__)
-    parser.add_argument("command", choices=("mock", "check", "list", "run", "validate", "access") + NOT_READY)
+    parser.add_argument("command", choices=("mock", "check", "list", "run", "validate", "access", "report") + NOT_READY)
     parser.add_argument("--config", help="config file (default: config.json, else config.example.json)")
     parser.add_argument("--root", help="repository root (default: parent of the config file's folder)")
     parser.add_argument("--out", help="output folder (default: 'out' from the config, under the root)")
@@ -24,6 +24,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--force", action="store_true", help="validate: score the test half again (logged); normally refused")
     parser.add_argument("--allow-uncommitted", action="store_true", help="validate: skip the check that the check points are committed")
     parser.add_argument("--restore", action="store_true", help="validate: put the stored test result back into stats.json without scoring")
+    parser.add_argument("--readme", help="report: README file whose results block is rewritten (default: README.md in the root)")
     parser.add_argument("--start", default="2026-09-01", help="list: first date to search (UTC)")
     parser.add_argument("--end", default="2026-10-31", help="list: last date to search (UTC)")
     parser.add_argument("--version", action="version", version=__version__)
@@ -69,6 +70,17 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  threshold used {summary['threshold_db']} dB (Otsu first guess {summary['otsu_first_guess_db']:.2f} dB)")
         if summary["baseline_flag_rate"] >= summary["post_event_flag_rate"]:
             print("  WARNING: the baseline flag rate is not lower than after the quake: the signal is weak or the method is wrong here.")
+        return 0
+
+    if args.command == "report":
+        from .report import ReportError, update_readme
+
+        try:
+            block = update_readme(Path(args.readme) if args.readme else root / "README.md", out / "stats.json")
+        except (ReportError, FileNotFoundError, ValueError) as e:
+            print(f"cannot write the results: {e}", file=sys.stderr)
+            return 1
+        print(block)
         return 0
 
     if args.command == "access":
