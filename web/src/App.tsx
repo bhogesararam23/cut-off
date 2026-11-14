@@ -5,12 +5,9 @@ import { MockBanner } from './components/MockBanner.tsx';
 import { TabbedPanel } from './components/SidePanel.tsx';
 import { TopBar } from './components/TopBar.tsx';
 import { AppStateProvider } from './lib/AppState.tsx';
+import { MapView } from './components/map/MapView.tsx';
 import { DataProvider } from './lib/DataContext.tsx';
 import { DESKTOP_QUERY, useMedia } from './lib/useMedia.ts';
-
-function MapArea() {
-  return <div className="h-full w-full bg-slate-800" />; // replaced by the map in the next step
-}
 
 function Layout() {
   const desktop = useMedia(DESKTOP_QUERY);
@@ -22,8 +19,8 @@ function Layout() {
       <main className="relative flex min-h-0 flex-1">
         {desktop ? (
           <>
-            <div className="min-w-0 flex-1">
-              <MapArea />
+            <div className="relative min-w-0 flex-1">
+              <MapView />
             </div>
             <aside className="w-[400px] shrink-0 border-l border-slate-200 bg-white">
               <TabbedPanel />
@@ -32,7 +29,7 @@ function Layout() {
         ) : (
           <>
             <div className="absolute inset-x-0 top-0 bottom-[35%]">
-              <MapArea />
+              <MapView />
             </div>
             <BottomSheet>
               <TabbedPanel />

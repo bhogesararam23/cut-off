@@ -63,7 +63,7 @@ export function TabbedPanel() {
             aria-controls="tabpanel"
             tabIndex={tab === id ? 0 : -1}
             onClick={() => setTab(id)}
-            className={`shrink-0 whitespace-nowrap rounded-t px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
+            className={`shrink-0 whitespace-nowrap rounded-t px-1.5 py-1.5 text-[13px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
               tab === id ? 'border-b-2 border-slate-900 font-semibold' : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
