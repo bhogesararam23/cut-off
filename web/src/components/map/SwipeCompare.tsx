@@ -5,6 +5,7 @@ import { C, fill } from '../../lib/content.ts';
 import { ready, useData } from '../../lib/DataContext.tsx';
 import { fmtDayYear, hoursBetween } from '../../lib/format.ts';
 import { FLY_MIN_ZOOM } from '../../lib/mapStyle.ts';
+import { FeaturePopup } from './FeaturePopup.tsx';
 import { MapCanvas } from './MapCanvas.tsx';
 
 const START_PCT = 50;
@@ -108,6 +109,8 @@ export function SwipeCompare({ onAfterMap }: { onAfterMap?: (map: MapLibreMap | 
       <div className="absolute inset-0" style={{ clipPath: `inset(0 0 0 ${pct}%)` }}>
         <MapCanvas side="after" onMap={setAfterMap} />
       </div>
+
+      <FeaturePopup map={after} />
 
       {pair && (
         <>

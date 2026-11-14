@@ -1,13 +1,27 @@
+import { lazy, Suspense } from 'react';
 import { AboutModal } from './components/AboutModal.tsx';
 import { BottomSheet } from './components/BottomSheet.tsx';
+import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 import { Footer } from './components/Footer.tsx';
 import { MockBanner } from './components/MockBanner.tsx';
 import { TabbedPanel } from './components/SidePanel.tsx';
 import { TopBar } from './components/TopBar.tsx';
 import { AppStateProvider } from './lib/AppState.tsx';
-import { MapView } from './components/map/MapView.tsx';
 import { DataProvider } from './lib/DataContext.tsx';
 import { DESKTOP_QUERY, useMedia } from './lib/useMedia.ts';
+
+// the map library is large: the page and panel appear first, the map follows
+const MapView = lazy(() => import('./components/map/MapView.tsx').then((m) => ({ default: m.MapView })));
+
+function MapSlot() {
+  return (
+    <ErrorBoundary>
+      <Suspense fallback={<div role="status" aria-label="Loading map" className="absolute inset-0 animate-pulse bg-slate-800" />}>
+        <MapView />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
 
 function Layout() {
   const desktop = useMedia(DESKTOP_QUERY);
@@ -20,7 +34,7 @@ function Layout() {
         {desktop ? (
           <>
             <div className="relative min-w-0 flex-1">
-              <MapView />
+              <MapSlot />
             </div>
             <aside className="w-[400px] shrink-0 border-l border-slate-200 bg-white">
               <TabbedPanel />
@@ -29,7 +43,7 @@ function Layout() {
         ) : (
           <>
             <div className="absolute inset-x-0 top-0 bottom-[35%]">
-              <MapView />
+              <MapSlot />
             </div>
             <BottomSheet>
               <TabbedPanel />

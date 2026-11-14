@@ -23,7 +23,7 @@ export function BottomSheet({ children }: { children: ReactNode }) {
   return (
     <section
       aria-label="Details"
-      className={`absolute inset-x-0 bottom-0 z-20 flex flex-col rounded-t-xl border-t border-slate-300 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.15)] transition-[height] duration-200 ${
+      className={`absolute inset-x-0 bottom-0 z-20 flex flex-col rounded-t-xl border-t border-slate-300 bg-white shadow-[0_-4px_12px_rgba(0,0,0,0.15)] transition-[height] duration-200 motion-reduce:transition-none ${
         sheetOpen ? 'h-[85%]' : 'h-[35%]'
       }`}
     >

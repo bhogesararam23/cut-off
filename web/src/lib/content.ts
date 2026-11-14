@@ -151,7 +151,14 @@ export const C = {
       seen: 'Seen in {pairs_seen} of {pairs_visible} passes that could see it',
       confidence: 'Confidence: {confidence}',
     },
-    road: { unnamed: 'Unnamed road', type: 'Type: {highway}', nearest: 'Nearest landslide: {distance} m' },
+    road: {
+      unnamed: 'Unnamed road',
+      type: 'Type: {highway}',
+      nearest: 'Nearest landslide: {distance} m',
+      ids: 'Landslides nearby: {ids}',
+    },
+    community: { hub: 'Nearest town: {hub}', population: ', population {n}' },
+    close: 'Close',
     status: {
       blocked: 'Likely blocked',
       at_risk: 'At risk',
