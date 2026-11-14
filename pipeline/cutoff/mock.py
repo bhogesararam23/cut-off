@@ -6,7 +6,6 @@ Everything here is made up. Every file that can carry the flag has "mock": true,
 
 from __future__ import annotations
 
-import json
 import math
 from pathlib import Path
 
@@ -17,13 +16,14 @@ from shapely.geometry import LineString, Polygon
 from shapely.geometry.polygon import orient
 from shapely.ops import unary_union
 
+from .export import default_timeline, pair_entry, png_change, png_hv, write_json
+
 SEED = 2026
 LON0, LAT0 = -80.87, 7.48            # centre of the mock landslide cluster
 KLAT = 110_574.0                      # metres per degree of latitude (local approximation)
 KLON = 111_320.0 * math.cos(math.radians(LAT0))
 N_LANDSLIDES = 25
 IMG = 768                             # side of each synthetic PNG, in pixels
-QUAKE_UTC = "2026-10-09T17:56:00Z"
 
 
 def r6(v: float) -> float:
@@ -32,11 +32,6 @@ def r6(v: float) -> float:
 
 def _metres(coords) -> list[tuple[float, float]]:
     return [((lon - LON0) * KLON, (lat - LAT0) * KLAT) for lon, lat in coords]
-
-
-def _write_json(path: Path, data, compact: bool = False) -> None:
-    text = json.dumps(data, ensure_ascii=False, separators=(",", ":")) if compact else json.dumps(data, ensure_ascii=False, indent=2)
-    path.write_text(text + "\n", encoding="utf-8", newline="\n")
 
 
 def confidence(seen: int, visible: int) -> str:
@@ -218,22 +213,6 @@ def _timeseries(cfg: dict, seed: int) -> list[dict]:
     return out
 
 
-def _png_hv(db: np.ndarray, nodata: np.ndarray) -> Image.Image:
-    grey = np.clip((db + 25.0) / 20.0, 0, 1) * 255.0          # -25 dB black, -5 dB white
-    alpha = np.where(nodata, 0, 255)
-    return Image.fromarray(np.dstack([grey.astype(np.uint8), alpha.astype(np.uint8)]), "LA")
-
-
-def _png_change(dhv: np.ndarray, nodata: np.ndarray) -> Image.Image:
-    rgba = np.zeros(dhv.shape + (4,), dtype=np.uint8)
-    drop, rise = dhv < 0, dhv > 0
-    rgba[drop, :3] = (220, 38, 38)                            # red = drop
-    rgba[rise, :3] = (37, 99, 235)                            # blue = rise
-    alpha = np.clip((np.abs(dhv) - 1.0) / 5.0, 0, 1) * 255.0  # transparent near 0, full at 6 dB
-    rgba[..., 3] = np.where(nodata, 0, alpha).astype(np.uint8)
-    return Image.fromarray(rgba, "RGBA")
-
-
 def _images(out: Path, pairs: list[dict], landslides: list[dict], bbox: list[float], seed: int) -> list[str]:
     west, south, east, north = bbox
     mask_img = Image.new("L", (IMG, IMG), 0)
@@ -257,9 +236,9 @@ def _images(out: Path, pairs: list[dict], landslides: list[dict], bbox: list[flo
         before = -12.0 + 2.0 * base + gain + gaussian_filter(rng.normal(0, 1.2, (IMG, IMG)), 1.0)
         after = -12.0 + 2.0 * base + gain + gaussian_filter(rng.normal(0, 1.2, (IMG, IMG)), 1.0) - 5.5 * scar
         names = {
-            p["before_png"]: _png_hv(before, nodata),
-            p["after_png"]: _png_hv(after, nodata),
-            p["change_png"]: _png_change(after - before, nodata),
+            p["before_png"]: png_hv(before, nodata),
+            p["after_png"]: png_hv(after, nodata),
+            p["change_png"]: png_change(after - before, nodata),
         }
         for name, img in names.items():
             img.save(out / name, optimize=True)
@@ -279,36 +258,25 @@ def write_mock(cfg: dict, out: str | Path) -> list[str]:
         "epicentre": cfg["epicentre"], "bbox": cfg["bbox"], "maturity": cfg["maturity"],
         "mock": True, "references": cfg["references"],
     }
-    _write_json(out / "event.json", event)
+    write_json(out / "event.json", event)
 
-    pairs = []
     rng = np.random.default_rng([seed, 4])
-    w, s, e, n = cfg["bbox"]
-    for p in cfg["pairs"]:
-        d_before, d_after = p["before"][:10].replace("-", ""), p["after"][:10].replace("-", "")
-        pairs.append({
-            "id": p["id"], "track": p["track"], "direction": p["direction"], "before": p["before"], "after": p["after"],
-            "before_png": f"hv_{p['id']}_{d_before}.png", "after_png": f"hv_{p['id']}_{d_after}.png",
-            "change_png": f"hv_change_{p['id']}.png",
-            "bounds": [[w, n], [e, n], [e, s], [w, s]],
-            "granules": list(p.get("granules", [])),
-            "flagged_pixels": int(rng.integers(800, 3000)),
-        })
-    _write_json(out / "pairs.json", pairs)
+    pairs = [pair_entry(p, cfg["bbox"], int(rng.integers(800, 3000))) for p in cfg["pairs"]]
+    write_json(out / "pairs.json", pairs)
 
     landslides = _landslides(seed)
-    _write_json(out / "landslides.geojson", {"type": "FeatureCollection", "features": landslides}, compact=True)
+    write_json(out / "landslides.geojson", {"type": "FeatureCollection", "features": landslides}, compact=True)
     unknown = _unknown_areas()
-    _write_json(out / "unknown.geojson", {"type": "FeatureCollection", "features": unknown}, compact=True)
+    write_json(out / "unknown.geojson", {"type": "FeatureCollection", "features": unknown}, compact=True)
 
     roads = _roads(landslides, unknown)
     blocked_km = sum(f["_length_m"] for f in roads if f["properties"]["status"] == "blocked") / 1000.0
     for f in roads:
         del f["_length_m"]
-    _write_json(out / "roads.geojson", {"type": "FeatureCollection", "features": roads}, compact=True)
+    write_json(out / "roads.geojson", {"type": "FeatureCollection", "features": roads}, compact=True)
 
     communities = _communities(roads)
-    _write_json(out / "communities.geojson", {"type": "FeatureCollection", "features": communities}, compact=True)
+    write_json(out / "communities.geojson", {"type": "FeatureCollection", "features": communities}, compact=True)
 
     stats = {
         "mock": True,
@@ -330,13 +298,9 @@ def write_mock(cfg: dict, out: str | Path) -> list[str]:
                        min_forest_hv_db=float(cfg["detect"]["min_forest_hv_db"])),
         "pixel_m": float(cfg["target_res_m"]),
     }
-    _write_json(out / "stats.json", stats)
-    _write_json(out / "timeseries.json", _timeseries(cfg, seed))
-    _write_json(out / "timeline.json", [
-        {"time_utc": QUAKE_UTC, "label": "M7.7 earthquake", "source": "USGS"},
-        {"time_utc": "2026-10-09T23:53:35Z", "label": "First NISAR pass after the quake (track 141)", "source": "ASF"},
-        {"time_utc": "2026-10-16T00:00:00Z", "label": "92% of roads with structural collapses reopened", "source": "Newsroom Panama"},
-    ])
+    write_json(out / "stats.json", stats)
+    write_json(out / "timeseries.json", _timeseries(cfg, seed))
+    write_json(out / "timeline.json", default_timeline(cfg))
 
     pngs = _images(out, pairs, landslides, cfg["bbox"], seed)
     written = ["event.json", "pairs.json", "landslides.geojson", "unknown.geojson", "roads.geojson",
