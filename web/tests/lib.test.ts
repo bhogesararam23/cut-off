@@ -23,6 +23,7 @@ test('dates are formatted in UTC', () => {
 test('rates are fractions in the data and percents on screen', () => {
   assert.equal(fmtPercent(0.78), '78');
   assert.equal(fmtPercent(0.004), '0');
+  assert.equal(fmtPercent(0.004, 1), '0.4');
   assert.equal(fmtPercent(null), '–');
   assert.equal(fmtPercent(Number.NaN), '–');
 });

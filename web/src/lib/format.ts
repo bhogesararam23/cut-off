@@ -38,9 +38,9 @@ export function fmtDateTime(iso: string): string {
 export function fmtNumber(n: number | null | undefined, digits = 0): string {
   return n === null || n === undefined || !Number.isFinite(n) ? '–' : nf(digits).format(n);
 }
-/** A 0-1 rate as a whole-number percent, without the % sign. */
-export function fmtPercent(rate: number | null | undefined): string {
-  return rate === null || rate === undefined || !Number.isFinite(rate) ? '–' : nf(0).format(rate * PERCENT);
+/** A 0-1 rate as a percent (whole number unless `digits` is given), without the % sign. */
+export function fmtPercent(rate: number | null | undefined, digits = 0): string {
+  return rate === null || rate === undefined || !Number.isFinite(rate) ? '–' : nf(digits).format(rate * PERCENT);
 }
 /** Square metres, or hectares above one hectare's worth of 10,000 m². */
 export function fmtArea(m2: number): string {

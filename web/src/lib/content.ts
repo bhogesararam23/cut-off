@@ -76,6 +76,8 @@ export const C = {
     sorts: { size: 'Size', confidence: 'Confidence', passes: 'Radar passes' },
     row: '{id} · {area} · seen in {pairs_seen} of {pairs_visible} passes',
     empty: 'No landslides match this filter.',
+    showing: 'Showing the first {shown} of {total}.',
+    confidenceLabels: { high: 'High', medium: 'Medium', low: 'Low' },
     confidenceHelp:
       'High: seen in at least 2 passes and in all but at most one pass that could see it. Medium: seen in at least 2 passes. Low: seen in 1 pass.',
   },

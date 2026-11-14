@@ -1,9 +1,11 @@
 import { useRef, type KeyboardEvent } from 'react';
 import { useApp } from '../lib/AppState.tsx';
 import { C, TAB_ORDER, type TabId } from '../lib/content.ts';
+import { Access } from './panel/Access.tsx';
+import { Evidence } from './panel/Evidence.tsx';
+import { Landslides } from './panel/Landslides.tsx';
 import { Limits } from './panel/Limits.tsx';
 import { Overview } from './panel/Overview.tsx';
-import { Placeholder } from './panel/Placeholder.tsx';
 import { Timeline } from './panel/Timeline.tsx';
 import { WhyRadar } from './panel/WhyRadar.tsx';
 
@@ -12,11 +14,11 @@ function TabBody({ tab }: { tab: TabId }) {
     case 'overview':
       return <Overview />;
     case 'landslides':
-      return <Placeholder title={C.landslides.heading} />;
+      return <Landslides />;
     case 'access':
-      return <Placeholder title={C.access.heading} />;
+      return <Access />;
     case 'evidence':
-      return <Placeholder title={C.evidence.heading} />;
+      return <Evidence />;
     case 'why':
       return <WhyRadar />;
     case 'limits':
