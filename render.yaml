@@ -1,0 +1,25 @@
+# Render blueprint for the read-only API. The web app is hosted separately (Cloudflare Pages) and
+# works without this service: it falls back to the static data files.
+services:
+  - type: web
+    name: cut-off-api
+    runtime: python
+    plan: free
+    rootDir: api
+    branch: main
+    autoDeploy: true
+    healthCheckPath: /api/health
+    # the data files live in the repository under web/public/data; copy them next to the API at build time
+    buildCommand: pip install -r requirements.txt && rm -rf data && cp -r ../web/public/data ./data
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DATA_DIR
+        value: data
+      # exact origin of the website, for example https://cut-off.pages.dev (no wildcard, no trailing path)
+      - key: CORS_ORIGINS
+        sync: false
+      # public address of this service, so image links in /pairs are absolute and https
+      - key: PUBLIC_URL
+        sync: false

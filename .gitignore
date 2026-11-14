@@ -11,6 +11,9 @@ data/raw/
 data/work/
 *.tif
 
+# data copied next to the API when it is built for hosting
+api/data/
+
 # local configuration and credentials
 .env
 .env.*
