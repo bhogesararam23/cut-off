@@ -1,0 +1,17 @@
+[
+  {
+    "time_utc": "2026-10-09T17:56:00Z",
+    "label": "M7.7 earthquake",
+    "source": "USGS"
+  },
+  {
+    "time_utc": "2026-10-09T23:53:35Z",
+    "label": "First NISAR pass after the quake (track 141)",
+    "source": "ASF"
+  },
+  {
+    "time_utc": "2026-10-16T00:00:00Z",
+    "label": "92% of roads with structural collapses reopened",
+    "source": "Newsroom Panama"
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "id": "t141d",
+    "track": 141,
+    "direction": "descending",
+    "before": "2026-09-27T23:53:35Z",
+    "after": "2026-10-09T23:53:35Z",
+    "before_png": "hv_t141d_20260927.png",
+    "after_png": "hv_t141d_20261009.png",
+    "change_png": "hv_change_t141d.png",
+    "bounds": [
+      [
+        -81.0,
+        8.0
+      ],
+      [
+        -80.3,
+        8.0
+      ],
+      [
+        -80.3,
+        7.3
+      ],
+      [
+        -81.0,
+        7.3
+      ]
+    ],
+    "granules": [],
+    "flagged_pixels": 1316
+  },
+  {
+    "id": "t4a",
+    "track": 4,
+    "direction": "ascending",
+    "before": "2026-09-30T11:04:20Z",
+    "after": "2026-10-12T11:04:20Z",
+    "before_png": "hv_t4a_20260930.png",
+    "after_png": "hv_t4a_20261012.png",
+    "change_png": "hv_change_t4a.png",
+    "bounds": [
+      [
+        -81.0,
+        8.0
+      ],
+      [
+        -80.3,
+        8.0
+      ],
+      [
+        -80.3,
+        7.3
+      ],
+      [
+        -81.0,
+        7.3
+      ]
+    ],
+    "granules": [],
+    "flagged_pixels": 2878
+  },
+  {
+    "id": "t40d",
+    "track": 40,
+    "direction": "descending",
+    "before": "2026-10-02T23:45:16Z",
+    "after": "2026-10-14T23:45:16Z",
+    "before_png": "hv_t40d_20261002.png",
+    "after_png": "hv_t40d_20261014.png",
+    "change_png": "hv_change_t40d.png",
+    "bounds": [
+      [
+        -81.0,
+        8.0
+      ],
+      [
+        -80.3,
+        8.0
+      ],
+      [
+        -80.3,
+        7.3
+      ],
+      [
+        -81.0,
+        7.3
+      ]
+    ],
+    "granules": [],
+    "flagged_pixels": 2883
+  },
+  {
+    "id": "t76a",
+    "track": 76,
+    "direction": "ascending",
+    "before": "2026-10-05T10:56:04Z",
+    "after": "2026-10-17T10:56:04Z",
+    "before_png": "hv_t76a_20261005.png",
+    "after_png": "hv_t76a_20261017.png",
+    "change_png": "hv_change_t76a.png",
+    "bounds": [
+      [
+        -81.0,
+        8.0
+      ],
+      [
+        -80.3,
+        8.0
+      ],
+      [
+        -80.3,
+        7.3
+      ],
+      [
+        -81.0,
+        7.3
+      ]
+    ],
+    "granules": [],
+    "flagged_pixels": 896
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "event_id": "panama-2026",
+  "name": "Panama M7.7 earthquake",
+  "time_utc": "2026-10-09T17:56:00Z",
+  "epicentre": [
+    -80.769,
+    7.587
+  ],
+  "bbox": [
+    -81.0,
+    7.3,
+    -80.3,
+    8.0
+  ],
+  "maturity": "PROVISIONAL",
+  "mock": true,
+  "references": [
+    {
+      "label": "Copernicus EMS EMSR934",
+      "url": "https://mapping.emergency.copernicus.eu/news/earthquake-in-los-santos-panama-emsr934/"
+    }
+  ]
+}
