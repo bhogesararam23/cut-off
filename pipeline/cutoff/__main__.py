@@ -9,12 +9,12 @@ from pathlib import Path
 from . import __version__
 from .config import load_config
 
-NOT_READY = ("access",)
+NOT_READY = ()
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="cutoff", description=__doc__)
-    parser.add_argument("command", choices=("mock", "check", "list", "run", "validate") + NOT_READY)
+    parser.add_argument("command", choices=("mock", "check", "list", "run", "validate", "access") + NOT_READY)
     parser.add_argument("--config", help="config file (default: config.json, else config.example.json)")
     parser.add_argument("--root", help="repository root (default: parent of the config file's folder)")
     parser.add_argument("--out", help="output folder (default: 'out' from the config, under the root)")
@@ -69,6 +69,26 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  threshold used {summary['threshold_db']} dB (Otsu first guess {summary['otsu_first_guess_db']:.2f} dB)")
         if summary["baseline_flag_rate"] >= summary["post_event_flag_rate"]:
             print("  WARNING: the baseline flag rate is not lower than after the quake: the signal is weak or the method is wrong here.")
+        return 0
+
+    if args.command == "access":
+        from .access import AccessError, run_access
+
+        try:
+            summary = run_access(cfg, root, out=out)
+        except (AccessError, FileNotFoundError, ValueError) as e:
+            print(f"cannot run access: {e}", file=sys.stderr)
+            return 1
+        km = summary["road_km"]
+        print("\nsummary")
+        print("  roads: " + " · ".join(f"{km[s]:.1f} km {label}" for s, label in (("blocked", "likely blocked"), ("at_risk", "at risk"), ("clear", "clear"), ("unknown", "unknown"))))
+        c = summary["communities"]
+        print(f"  communities: {c['cut_off']} possibly cut off, {c['reachable']} reachable, {c['unknown']} unknown")
+        print("  places reported as cut off in news, compared with this map:")
+        for r in summary["reported_places"]:
+            print(f"    {r['name']}: " + (r["status"] if r["found_in_map"] else "not among the mapped places"))
+        if summary["skipped_hubs"]:
+            print(f"  towns left out (not on the road map): {', '.join(summary['skipped_hubs'])}")
         return 0
 
     if args.command == "validate":
