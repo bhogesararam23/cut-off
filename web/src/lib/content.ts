@@ -12,7 +12,7 @@ export function fill(template: string, values: Record<string, string | number | 
 
 export const C = {
   meta: {
-    title: "Cut Off: NISAR radar finds the roads Panama's landslides blocked",
+    title: "Cut Off: NISAR radar finds the roads Panama's landslides likely blocked",
   },
   topBar: {
     title: 'Cut Off',
