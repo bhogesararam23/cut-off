@@ -16,6 +16,7 @@ Append-only. No AI-generated images or video are used.
 | 2026-11-14 | AI coding assistant | Processing run (all pairs, baseline, time series, every output file), granule listing, command line | `pipeline/cutoff/run.py`, `fetch.py`, `__main__.py`, tests | End-to-end test on a synthetic scene; listing checked against the live archive |
 | 2026-11-14 | AI coding assistant | Web app shell: all app text, data loading with per-file errors, top bar, pair selector, About window, credits, side panel and phone bottom sheet with seven tabs, Overview, Why radar, Limits and Timeline tabs, security headers file | `web/src/**`, `web/public/_headers`, tests | Type check, build, unit tests; layout checked in the browser at laptop and phone widths |
 | 2026-11-14 | AI coding assistant | Map: NASA GIBS basemap, radar image, landslide, road, community and shadow layers, epicentre marker, legend and layer toggles; MapLibre worker setup | `web/src/components/map/**`, `web/src/lib/map*.ts` | Type check, build, viewed in the browser at laptop and phone widths, layer toggle tried |
+| 2026-11-14 | AI coding assistant | Before/after swipe: two synced maps, draggable divider with mouse, touch and keyboard control, date labels | `web/src/components/map/SwipeCompare.tsx` | Build; drag, keyboard, touch-style pointer events and zoom sync tried in the browser |
 
 Summary for the submission form (update at the end):
 - Tools: AI chat assistant, AI coding assistant.

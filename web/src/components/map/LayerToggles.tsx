@@ -11,7 +11,7 @@ export function LayerToggles() {
   const [open, setOpen] = useState(() => window.matchMedia(DESKTOP_QUERY).matches);
 
   return (
-    <div className="absolute left-2 top-2 z-10 max-w-[15rem] rounded-md bg-white/95 text-sm shadow">
+    <div className="absolute left-2 top-10 z-10 max-w-[15rem] rounded-md bg-white/95 text-sm shadow">
       <button
         type="button"
         aria-expanded={open}
