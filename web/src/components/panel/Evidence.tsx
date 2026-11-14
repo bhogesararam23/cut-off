@@ -1,8 +1,12 @@
+import { lazy, Suspense } from 'react';
 import { C, fill } from '../../lib/content.ts';
 import { ready, useData } from '../../lib/DataContext.tsx';
 import { fmtNumber, fmtPercent } from '../../lib/format.ts';
 import { FileError } from '../FileError.tsx';
 import { Skeleton } from '../Skeleton.tsx';
+
+// the charting library is large: fetched only when this tab is first opened
+const EvidenceCharts = lazy(() => import('../charts/EvidenceCharts.tsx'));
 
 const REPO = import.meta.env.VITE_REPO_URL?.replace(/\/$/, '');
 
@@ -31,6 +35,10 @@ export function Evidence() {
           ) : (
             <p>{C.evidence.noValidation}</p>
           )}
+
+          <Suspense fallback={<Skeleton className="h-64" />}>
+            <EvidenceCharts />
+          </Suspense>
 
           <div>
             <h3 className="font-semibold">{C.evidence.baselineHeading}</h3>

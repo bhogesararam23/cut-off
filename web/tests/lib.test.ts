@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { C, fill } from '../src/lib/content.ts';
 import {
-  daysBetween, fmtArea, fmtDay, fmtDayLong, fmtDayYear, fmtDateTime, fmtNumber, fmtPercent, hoursBetween, landslideDrop,
+  daysBetween, fmtArea, fmtDay, fmtDayLong, fmtDayYear, fmtDateTime, fmtNumber, fmtPercent, forestStaysFlat, hoursBetween, hvDrop, landslideDrop,
 } from '../src/lib/format.ts';
 
 test('fill replaces placeholders and never invents a number', () => {
@@ -58,4 +58,15 @@ test('required wording rules hold in the app text', () => {
   assert.equal(C.popups.status.cut_off, 'Possibly cut off');
   assert.equal(C.legend.communities.cut_off, 'Possibly cut off');
   assert.equal(C.limits.items.length, 8);
+});
+
+test('forest only counts as flat when it moved far less than the landslides', () => {
+  const q = '2026-10-09T17:56:00Z';
+  const row = (date: string, land: number, forest: number) => ({ date, track: 1, direction: 'descending' as const, hv_landslide_db: land, hv_forest_db: forest });
+  const flat = [row('2026-09-20T00:00:00Z', -13, -13), row('2026-10-12T00:00:00Z', -18, -13.2)];
+  const dropped = [row('2026-09-20T00:00:00Z', -13, -13), row('2026-10-12T00:00:00Z', -18, -16)];
+  assert.equal(forestStaysFlat(flat, q), true);
+  assert.equal(forestStaysFlat(dropped, q), false);
+  assert.equal(forestStaysFlat([], q), false);
+  assert.ok(Math.abs((hvDrop(dropped, q, 'hv_forest_db') as number) - 3) < 1e-9);
 });

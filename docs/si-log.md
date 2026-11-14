@@ -18,6 +18,7 @@ Append-only. No AI-generated images or video are used.
 | 2026-11-14 | AI coding assistant | Map: NASA GIBS basemap, radar image, landslide, road, community and shadow layers, epicentre marker, legend and layer toggles; MapLibre worker setup | `web/src/components/map/**`, `web/src/lib/map*.ts` | Type check, build, viewed in the browser at laptop and phone widths, layer toggle tried |
 | 2026-11-14 | AI coding assistant | Before/after swipe: two synced maps, draggable divider with mouse, touch and keyboard control, date labels | `web/src/components/map/SwipeCompare.tsx` | Build; drag, keyboard, touch-style pointer events and zoom sync tried in the browser |
 | 2026-11-14 | AI coding assistant | Landslides, Access and Evidence tabs: filter and sort, grouped communities, road kilometres by status, accuracy text; list/summing helpers | `web/src/components/panel/**`, `web/src/lib/lists.ts`, tests | Unit tests for filter, sort and distance sums; tabs checked in the browser against the mock files |
+| 2026-11-14 | AI coding assistant | Evidence charts (detection by size, HV over time) loaded on demand, each with a text summary that checks the data before saying forest stayed flat | `web/src/components/charts/**`, `web/src/lib/format.ts`, tests | Unit tests; charts and summaries checked in the browser against the mock files |
 
 Summary for the submission form (update at the end):
 - Tools: AI chat assistant, AI coding assistant.

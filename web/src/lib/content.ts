@@ -106,6 +106,12 @@ export const C = {
     chart1Summary: 'Detection rate was {small}% for small, {medium}% for medium and {large}% for large scars.',
     chart2Title: 'Radar signal at landslides vs intact forest',
     chart2Summary: 'Before the quake both lines sit together. After it, the signal at landslides drops by about {drop} dB while forest stays flat.',
+    // Used instead of the sentence above when the forest line moved too: the data must not be described as flat then.
+    chart2SummaryNeutral:
+      'Before the quake both lines sit together. After it, the signal at landslides changes by about {drop} dB and at intact forest by about {forest_drop} dB.',
+    quakeLabel: 'Quake',
+    atLandslides: 'At landslides',
+    atForest: 'Intact forest',
     chartEmpty: 'Nothing to chart yet.',
     baselineHeading: 'Does it flag change when nothing happened?',
     baselineText: 'We ran the same method on two passes before the quake (20 Sep vs 2 Oct). It flagged {baseline}% of forested slopes, against {post}% after the quake.',
