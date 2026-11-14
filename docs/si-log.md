@@ -23,6 +23,7 @@ Append-only. No AI-generated images or video are used.
 | 2026-11-14 | AI coding assistant | Checks of the web app: real-data switch (banner off, empty states), dependency audit, production build under the security headers | none (test runs only) | Browser runs listed in the commit history; npm audit clean |
 | 2026-11-14 | AI coding assistant | API response models that mirror the output files, and a safe read-only data store (name allowlists, resolved-path check) | `api/models.py`, `api/store.py`, tests | Unit tests, including attempts to escape the data folder |
 | 2026-11-14 | AI coding assistant | Read-only API: every endpoint with filters and error messages, CORS allowlist, cache and safety headers, generic error handling, docs page | `api/main.py`, `api/tests/test_endpoints.py` | 42 endpoint tests against the mock files; a live call to the health endpoint |
+| 2026-11-14 | AI coding assistant | API security tests: many path-traversal forms, other origins and preflight, non-GET methods, damaged files and crashes (no leaks) | `api/tests/test_security.py` | 440 API tests pass |
 
 Summary for the submission form (update at the end):
 - Tools: AI chat assistant, AI coding assistant.
