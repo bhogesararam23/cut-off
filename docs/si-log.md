@@ -21,6 +21,7 @@ Append-only. No AI-generated images or video are used.
 | 2026-11-14 | AI coding assistant | Evidence charts (detection by size, HV over time) loaded on demand, each with a text summary that checks the data before saying forest stayed flat | `web/src/components/charts/**`, `web/src/lib/format.ts`, tests | Unit tests; charts and summaries checked in the browser against the mock files |
 | 2026-11-14 | AI coding assistant | Feature popups as plain React text pinned to the map, error boundary, on-demand loading of the map code, small accessibility fixes | `web/src/components/map/FeaturePopup.tsx`, `ErrorBoundary.tsx`, `App.tsx` | Build; popups, close, Escape and phone layout checked in the browser |
 | 2026-11-14 | AI coding assistant | Checks of the web app: real-data switch (banner off, empty states), dependency audit, production build under the security headers | none (test runs only) | Browser runs listed in the commit history; npm audit clean |
+| 2026-11-14 | AI coding assistant | API response models that mirror the output files, and a safe read-only data store (name allowlists, resolved-path check) | `api/models.py`, `api/store.py`, tests | Unit tests, including attempts to escape the data folder |
 
 Summary for the submission form (update at the end):
 - Tools: AI chat assistant, AI coding assistant.
