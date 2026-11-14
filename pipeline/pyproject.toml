@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cutoff"
+version = "0.1.0"
+description = "Offline processing for Cut Off: NISAR radar change to landslides, blocked roads and cut-off communities"
+requires-python = ">=3.11,<3.12"
+license = { text = "Apache-2.0" }
+dependencies = [
+  "numpy==2.4.6",
+  "scipy==1.17.1",
+  "rasterio==1.4.4",
+  "geopandas==1.2.0",
+  "shapely==2.2.0",
+  "scikit-image==0.26.0",
+  "networkx==3.6.1",
+  "pillow==13.0.0",
+  "pyproj==3.7.2",
+  "asf_search==14.1.0",
+  "earthaccess==0.17.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.2.0"]
+
+[tool.setuptools.packages.find]
+include = ["cutoff*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
