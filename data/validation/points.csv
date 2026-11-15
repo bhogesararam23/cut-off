@@ -1,0 +1,184 @@
+id,lon,lat,label,size,notes
+P001,-80.856739,7.523968,landslide,large,S2 NDVI loss on slope; width ~108 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P002,-80.722275,7.447739,landslide,large,S2 NDVI loss on slope; width ~117 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P003,-80.671450,7.425362,landslide,medium,S2 NDVI loss on slope; width ~45 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P004,-80.838608,7.532103,landslide,medium,S2 NDVI loss on slope; width ~45 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P005,-80.921364,7.542076,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P006,-80.754796,7.472272,landslide,medium,S2 NDVI loss on slope; width ~45 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P007,-80.860096,7.513476,landslide,medium,S2 NDVI loss on slope; width ~45 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P008,-80.842701,7.491851,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P009,-80.876500,7.520175,landslide,medium,S2 NDVI loss on slope; width ~80 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P010,-80.822396,7.498899,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P011,-80.858283,7.515466,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P012,-80.689870,7.519540,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P013,-80.846872,7.487963,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P014,-80.713710,7.517747,landslide,medium,S2 NDVI loss on slope; width ~45 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P015,-80.835090,7.484883,landslide,medium,S2 NDVI loss on slope; width ~45 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P016,-80.803982,7.531275,landslide,medium,S2 NDVI loss on slope; width ~57 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P017,-80.857466,7.517727,landslide,medium,S2 NDVI loss on slope; width ~57 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P018,-80.834890,7.534725,landslide,medium,S2 NDVI loss on slope; width ~57 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P019,-80.826116,7.488498,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P020,-80.673260,7.428710,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P021,-80.829382,7.480720,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P022,-80.683744,7.593710,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P023,-80.851857,7.487241,landslide,medium,S2 NDVI loss on slope; width ~57 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P024,-80.904089,7.777170,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P025,-80.852476,7.534370,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P026,-80.688690,7.522705,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P027,-80.806342,7.525306,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P028,-80.852582,7.486970,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P029,-80.677520,7.427899,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P030,-80.835887,7.535992,landslide,medium,S2 NDVI loss on slope; width ~72 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P031,-80.791411,7.472110,landslide,medium,S2 NDVI loss on slope; width ~45 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P032,-80.843138,7.536356,landslide,medium,S2 NDVI loss on slope; width ~45 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P033,-80.801800,7.546018,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P034,-80.847586,7.520709,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P035,-80.822111,7.531554,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P036,-80.901149,7.546685,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P037,-80.821566,7.533996,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P038,-80.776168,7.505662,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P039,-80.731526,7.435986,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P040,-80.776443,7.498607,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P041,-80.811506,7.530193,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P042,-80.788937,7.527740,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P043,-80.855016,7.526953,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P044,-80.808516,7.528473,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P045,-80.856655,7.504972,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P046,-80.800175,7.531002,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P047,-80.855381,7.521345,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P048,-80.870520,7.512032,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P049,-80.849033,7.528850,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P050,-80.756154,7.473901,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P051,-80.808696,7.529920,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P052,-80.740099,7.496868,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P053,-80.851482,7.522881,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P054,-80.852004,7.588010,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P055,-80.853119,7.508047,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P056,-80.672806,7.430247,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P057,-80.774086,7.500234,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P058,-80.745916,7.468468,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P059,-80.837516,7.543139,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P060,-80.738581,7.457971,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P061,-80.823380,7.532007,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P062,-80.770100,7.495890,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P063,-80.788664,7.530816,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P064,-80.655219,7.438194,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P065,-80.845135,7.531020,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P066,-80.704412,7.461115,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P067,-80.770192,7.493357,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P068,-80.768651,7.493085,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P069,-80.937225,7.558180,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P070,-80.865175,7.504794,landslide,medium,S2 NDVI loss on slope; width ~57 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P071,-80.805979,7.524492,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P072,-80.713983,7.517024,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P073,-80.854022,7.517455,landslide,medium,S2 NDVI loss on slope; width ~100 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P074,-80.694173,7.458666,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P075,-80.832805,7.536986,landslide,medium,S2 NDVI loss on slope; width ~45 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P076,-80.654586,7.437018,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P077,-80.753970,7.490454,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P078,-80.940760,7.559447,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P079,-80.837062,7.545219,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P080,-80.674616,7.433505,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P081,-80.768659,7.477798,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P082,-80.776618,7.511090,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P083,-80.825102,7.532189,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P084,-80.750616,7.490995,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P085,-80.768476,7.481235,landslide,medium,S2 NDVI loss on slope; width ~72 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P086,-80.854577,7.484800,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P087,-80.810531,7.480260,landslide,medium,S2 NDVI loss on slope; width ~45 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P088,-80.818122,7.533000,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P089,-80.837700,7.534726,landslide,medium,S2 NDVI loss on slope; width ~57 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P090,-80.678422,7.433056,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P091,-80.858827,7.515285,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P092,-80.814864,7.521149,landslide,medium,S2 NDVI loss on slope; width ~45 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P093,-80.767118,7.478159,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P094,-80.877315,7.526146,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P095,-80.882657,7.545053,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P096,-80.842505,7.534457,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P097,-80.810330,7.523770,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P098,-80.821593,7.468324,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P099,-80.870337,7.518274,landslide,medium,S2 NDVI loss on slope; width ~80 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P100,-80.824396,7.482979,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P101,-80.885195,7.547043,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P102,-80.848126,7.529845,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P103,-80.669807,7.441100,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P104,-80.883473,7.545053,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P105,-80.738853,7.458423,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P106,-80.825735,7.535988,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P107,-80.807877,7.537609,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P108,-80.876136,7.526778,landslide,medium,S2 NDVI loss on slope; width ~40 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P109,-80.835615,7.535087,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P110,-80.823756,7.498447,landslide,medium,S2 NDVI loss on slope; width ~60 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P111,-80.822759,7.497542,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P112,-80.936590,7.562251,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P113,-80.848322,7.487511,landslide,small,S2 NDVI loss on slope; width ~20 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P114,-80.667996,7.439832,landslide,small,S2 NDVI loss on slope; width ~28 m; checked by eye 8/22 Sep vs 18/28 Oct 2026
+P115,-80.893202,7.421581,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P116,-80.824157,7.402291,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P117,-80.742839,7.304648,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P118,-80.836768,7.602659,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P119,-80.843040,7.303609,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P120,-80.740686,7.423960,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P121,-80.795094,7.731451,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P122,-80.963494,7.784145,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P123,-80.875588,7.541432,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P124,-80.950357,7.666550,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P125,-80.827901,7.559055,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P126,-80.903287,7.712765,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P127,-80.766292,7.498330,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P128,-80.918433,7.700828,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P129,-80.864865,7.627363,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P130,-80.668281,7.300620,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P131,-80.998594,7.787222,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P132,-80.802579,7.425439,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P133,-80.868605,7.550657,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P134,-80.655718,7.495544,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P135,-80.754969,7.486565,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P136,-80.608688,7.586231,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P137,-80.908737,7.671066,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P138,-80.900399,7.654420,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P139,-80.961409,7.778265,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P140,-80.671630,7.304512,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P141,-80.783059,7.499334,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P142,-80.843579,7.316906,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P143,-80.912796,7.775092,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P144,-80.836517,7.302340,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P145,-80.653872,7.651036,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P146,-80.833722,7.743408,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P147,-80.920471,7.471429,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P148,-80.827544,7.545125,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P149,-80.742477,7.302658,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P150,-80.616297,7.592932,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P151,-80.902772,7.583864,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P152,-80.973389,7.650722,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P153,-80.980188,7.672794,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P154,-80.651777,7.662432,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P155,-80.619285,7.493343,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P156,-80.838505,7.317538,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P157,-80.611659,7.709253,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P158,-80.629281,7.461782,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P159,-80.747461,7.301847,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P160,-80.999320,7.766507,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P161,-80.947104,7.572202,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P162,-80.838081,7.486603,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P163,-80.827814,7.550191,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P164,-80.854090,7.312568,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P165,-80.854001,7.307683,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P166,-80.817901,7.409887,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P167,-80.900090,7.421582,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P168,-80.994422,7.754115,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P169,-80.940465,7.723446,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P170,-80.913356,7.695580,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P171,-80.970024,7.792829,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P172,-80.999955,7.705720,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P173,-80.889492,7.757176,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P174,-80.959049,7.795089,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P175,-80.901657,7.704081,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P176,-80.848200,7.316094,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P177,-80.955797,7.667997,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P178,-80.820384,7.543675,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P179,-80.965317,7.678310,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P180,-80.832257,7.307314,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P181,-80.916894,7.690063,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P182,-80.836842,7.405643,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
+P183,-80.951264,7.660760,forest,,S2 intact canopy before and after; checked by eye 8 Sep vs 28 Oct 2026
