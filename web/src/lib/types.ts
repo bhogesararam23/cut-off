@@ -19,6 +19,15 @@ export interface EventReference {
   label: string;
   url: string;
 }
+/** Optional optical (Sentinel-2) comparison images, same corner order as the radar images. */
+export interface Optical {
+  before_webp: string;
+  after_webp: string;
+  bounds: [LonLat, LonLat, LonLat, LonLat];
+  before_caption: string;
+  after_caption: string;
+  attribution: string;
+}
 export interface EventInfo {
   event_id: string;
   name: string;
@@ -27,10 +36,11 @@ export interface EventInfo {
   bbox: BBox;
   maturity: string;
   mock: boolean;
+  optical: Optical | null;
   references: EventReference[];
 }
 export const EVENT_KEYS: Record<keyof EventInfo, true> = {
-  event_id: true, name: true, time_utc: true, epicentre: true, bbox: true, maturity: true, mock: true, references: true,
+  event_id: true, name: true, time_utc: true, epicentre: true, bbox: true, maturity: true, mock: true, optical: true, references: true,
 };
 
 // pairs.json (array)

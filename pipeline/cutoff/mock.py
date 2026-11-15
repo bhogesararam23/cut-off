@@ -256,7 +256,7 @@ def write_mock(cfg: dict, out: str | Path) -> list[str]:
     event = {
         "event_id": cfg["event_id"], "name": cfg["name"], "time_utc": cfg["time_utc"],
         "epicentre": cfg["epicentre"], "bbox": cfg["bbox"], "maturity": cfg["maturity"],
-        "mock": True, "references": cfg["references"],
+        "mock": True, "optical": None, "references": cfg["references"],
     }
     write_json(out / "event.json", event)
 

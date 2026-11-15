@@ -32,6 +32,7 @@
   "hubs": [{"name": "Chitré", "lon": -80.43, "lat": 7.96}, {"name": "Las Tablas", "lon": -80.27, "lat": 7.77},
            {"name": "Tonosí", "lon": -80.44, "lat": 7.40}, {"name": "Macaracas", "lon": -80.55, "lat": 7.73},
            {"name": "Santiago", "lon": -80.98, "lat": 8.10}],
+  "optical": {"before_webp": "s2_before.webp", "after_webp": "s2_after.webp", "before_caption": "Sentinel-2 before: cloud-masked composite of 8 and 22 Sep 2026. Gaps are cloud.", "after_caption": "Sentinel-2 after: cloud-masked composite of 18 and 28 Oct 2026. Gaps are cloud.", "attribution": "Contains modified Copernicus Sentinel data 2026, processed by the team"},
   "timeline": [],
   "work": "data/work",
   "out": "web/public/data/panama-2026"

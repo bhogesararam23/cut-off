@@ -135,7 +135,7 @@ def exact_keys(obj: Any, spec: dict[str, Check], where: str, errors: list[str]) 
 
 EVENT = {
     "event_id": is_str, "name": is_str, "time_utc": is_iso, "epicentre": is_lonlat, "bbox": is_bbox,
-    "maturity": is_str, "mock": is_bool,
+    "maturity": is_str, "mock": is_bool, "optical": lambda v: None,
     "references": list_of(lambda r: None if isinstance(r, dict) and set(r) == {"label", "url"}
                           and all(isinstance(x, str) for x in r.values()) else "expected {label, url}"),
 }
@@ -157,6 +157,8 @@ COMMUNITY = {
     "osm_id": is_str_or_null, "name": is_str, "place": is_str, "population": is_int_or_null,
     "status": one_of(*COMMUNITY_STATUSES), "nearest_hub": is_str_or_null, "reason": is_str,
 }
+OPTICAL = {"before_webp": is_str, "after_webp": is_str, "bounds": is_bounds, "before_caption": is_str,
+           "after_caption": is_str, "attribution": is_str}
 STATS_PARAMS = {"threshold_db": is_num, "min_slope_deg": is_num, "min_forest_hv_db": is_num, "min_pixels": is_int}
 STATS_BY_SIZE = {"size": one_of("small", "medium", "large"), "n": is_int, "detection_rate": is_num}
 STATS_VALIDATION = {
@@ -280,7 +282,11 @@ def check_dir(folder: str | Path) -> list[str]:
 
     event = _load(folder, "event.json", errors)
     if event is not None:
-        exact_keys(event, EVENT, "event.json", errors)
+        if exact_keys(event, EVENT, "event.json", errors) and event["optical"] is not None:
+            if exact_keys(event["optical"], OPTICAL, "event.json.optical", errors):
+                for key in ("before_webp", "after_webp"):
+                    if not (folder / event["optical"][key]).is_file():
+                        errors.append(f"event.json.optical.{key}: file '{event['optical'][key]}' is missing")
 
     pairs = _load(folder, "pairs.json", errors)
     if pairs is not None:

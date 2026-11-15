@@ -11,6 +11,7 @@ export const LAYER_KIND: Record<string, Picked['kind']> = {
   landslides: 'landslide',
   roads: 'road',
   'roads-blocked': 'road',
+  'roads-risk': 'road',
   communities: 'community',
 };
 

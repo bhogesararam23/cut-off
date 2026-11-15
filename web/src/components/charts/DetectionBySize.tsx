@@ -1,12 +1,12 @@
 import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { C, fill } from '../../lib/content.ts';
+import { MIN_N_TO_SCORE } from '../../lib/answer.ts';
 import { fmtPercent } from '../../lib/format.ts';
 import type { SizeDetection } from '../../lib/types.ts';
 
 const ORDER: SizeDetection['size'][] = ['small', 'medium', 'large'];
 const BAR_COLOR = '#334155';
 const RATE_MAX = 1; // rates are stored as fractions of 1
-export const MIN_N_TO_SCORE = 5; // with fewer test points than this, a rate would be meaningless
 
 /** Detection rate by landslide size, with the number of test points (n) on each bar. */
 export function DetectionBySize({ bySize }: { bySize: SizeDetection[] }) {

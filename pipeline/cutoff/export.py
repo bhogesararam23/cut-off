@@ -59,6 +59,15 @@ def pair_entry(pair: dict, bbox: list[float], flagged_pixels: int) -> dict:
             "flagged_pixels": int(flagged_pixels)}
 
 
+def optical_entry(cfg: dict, out: Path) -> dict | None:
+    """The optional optical (Sentinel-2) comparison images: only listed if both files are in the output folder."""
+    o = cfg.get("optical")
+    if not o or not all((Path(out) / o[k]).is_file() for k in ("before_webp", "after_webp")):
+        return None
+    return {"before_webp": o["before_webp"], "after_webp": o["after_webp"], "bounds": bounds_from_bbox(cfg["bbox"]),
+            "before_caption": o["before_caption"], "after_caption": o["after_caption"], "attribution": o["attribution"]}
+
+
 def default_timeline(cfg: dict) -> list[dict]:
     """Timeline from the config, or the standard entries built from the earliest post-quake pass."""
     if cfg.get("timeline"):

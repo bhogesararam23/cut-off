@@ -1,86 +1,61 @@
-import { useRef, type KeyboardEvent } from 'react';
 import { useApp } from '../lib/AppState.tsx';
-import { C, TAB_ORDER, type TabId } from '../lib/content.ts';
+import { C, fill, TAB_ORDER, type TabId } from '../lib/content.ts';
 import { Access } from './panel/Access.tsx';
-import { Evidence } from './panel/Evidence.tsx';
 import { Landslides } from './panel/Landslides.tsx';
 import { Limits } from './panel/Limits.tsx';
-import { Overview } from './panel/Overview.tsx';
-import { Timeline } from './panel/Timeline.tsx';
-import { WhyRadar } from './panel/WhyRadar.tsx';
+import { Happened, RoadsStep, SureStep } from './panel/Steps.tsx';
 
-function TabBody({ tab }: { tab: TabId }) {
+function StepBody({ tab }: { tab: TabId }) {
   switch (tab) {
-    case 'overview':
-      return <Overview />;
-    case 'landslides':
-      return <Landslides />;
+    case 'happened':
+      return <Happened />;
+    case 'slopes':
+      return (
+        <>
+          <p className="mb-3 text-sm">{C.explorer.slopes}</p>
+          <Landslides />
+        </>
+      );
+    case 'roads':
+      return <RoadsStep />;
     case 'access':
       return <Access />;
-    case 'evidence':
-      return <Evidence />;
-    case 'why':
-      return <WhyRadar />;
+    case 'sure':
+      return <SureStep />;
     case 'limits':
       return <Limits />;
-    case 'timeline':
-      return <Timeline />;
   }
 }
 
-/** The seven tabs. Used in the desktop side panel and inside the phone bottom sheet. */
+/** The guided rail: six numbered steps. Choosing a step sets the map layers; nothing advances by itself. */
 export function TabbedPanel() {
   const { tab, setTab } = useApp();
-  const refs = useRef<Partial<Record<TabId, HTMLButtonElement | null>>>({});
-
-  const onKey = (e: KeyboardEvent) => {
-    const i = TAB_ORDER.indexOf(tab);
-    const next =
-      e.key === 'ArrowRight' ? i + 1 : e.key === 'ArrowLeft' ? i - 1 : e.key === 'Home' ? 0 : e.key === 'End' ? TAB_ORDER.length - 1 : null;
-    if (next === null) return;
-    e.preventDefault();
-    const id = TAB_ORDER[(next + TAB_ORDER.length) % TAB_ORDER.length];
-    setTab(id);
-    refs.current[id]?.focus();
-  };
-
+  const index = TAB_ORDER.indexOf(tab);
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      <div
-        role="tablist"
-        aria-label="Sections"
-        onKeyDown={onKey}
-        className="flex shrink-0 gap-1 overflow-x-auto border-b border-slate-200 bg-white px-2 pt-2"
-      >
-        {TAB_ORDER.map((id) => (
-          <button
-            key={id}
-            ref={(el) => {
-              refs.current[id] = el;
-            }}
-            role="tab"
-            id={`tab-${id}`}
-            type="button"
-            aria-selected={tab === id}
-            aria-controls="tabpanel"
-            tabIndex={tab === id ? 0 : -1}
-            onClick={() => setTab(id)}
-            className={`shrink-0 whitespace-nowrap rounded-t px-1.5 py-1.5 text-[13px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
-              tab === id ? 'border-b-2 border-slate-900 font-semibold' : 'text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            {C.tabs[id]}
-          </button>
-        ))}
-      </div>
-      <div
-        id="tabpanel"
-        role="tabpanel"
-        aria-labelledby={`tab-${tab}`}
-        tabIndex={0}
-        className="min-h-0 flex-1 overflow-y-auto p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-sky-500"
-      >
-        <TabBody tab={tab} />
+    <div className="flex h-full min-h-0 flex-col bg-paper">
+      <nav aria-label="Guided steps" className="shrink-0 border-b border-ink/15 bg-white p-2">
+        <ol className="grid grid-cols-6 gap-1 lg:grid-cols-3">
+          {TAB_ORDER.map((id, i) => (
+            <li key={id}>
+              <button
+                type="button"
+                aria-current={tab === id ? 'step' : undefined}
+                title={C.tabs[id]}
+                onClick={() => setTab(id)}
+                className={`flex w-full items-center gap-1.5 rounded-card border px-1.5 py-1.5 text-left text-xs transition-colors duration-150 ${
+                  tab === id ? 'border-ink bg-ink text-white' : 'border-ink/20 bg-white hover:bg-ink/5'
+                }`}
+              >
+                <span className="num flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-current text-[11px]">{i + 1}</span>
+                <span className="hidden leading-tight lg:inline">{C.tabs[id]}</span>
+              </button>
+            </li>
+          ))}
+        </ol>
+        <p className="num mt-1 text-[11px] text-ink/70 lg:hidden">{fill(C.explorer.stepLabel, { n: index + 1, total: TAB_ORDER.length })}: {C.tabs[tab]}</p>
+      </nav>
+      <div className="min-h-0 flex-1 overflow-y-auto p-4" tabIndex={0} role="region" aria-label={C.tabs[tab]}>
+        <StepBody tab={tab} />
       </div>
     </div>
   );

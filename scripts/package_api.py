@@ -19,7 +19,7 @@ from pathlib import Path
 
 API_FILES = ("main.py", "models.py", "store.py", "requirements.txt")
 EVENT_RE = re.compile(r"^[a-z0-9-]{1,64}$")
-FILE_RE = re.compile(r"^[a-z0-9_.-]{1,100}\.(png|json|geojson)$")
+FILE_RE = re.compile(r"^[a-z0-9_.-]{1,100}\.(png|webp|json|geojson)$")
 FIXED_TIME = (2026, 1, 1, 0, 0, 0)          # a fixed timestamp makes the zip identical for identical input
 
 

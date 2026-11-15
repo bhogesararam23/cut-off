@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 EVENT_ID_RE = re.compile(r"^[a-z0-9-]{1,64}$")
-FILE_NAME_RE = re.compile(r"^[a-z0-9_.-]{1,100}\.(png|json|geojson)$")
+FILE_NAME_RE = re.compile(r"^[a-z0-9_.-]{1,100}\.(png|webp|json|geojson)$")
 FEATURE_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 MAX_JSON_BYTES = 25 * 1024 * 1024  # the output files are far smaller; this stops a runaway file
 

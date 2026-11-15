@@ -185,7 +185,8 @@ def run(cfg: dict, root: Path, out: Path | None = None, work: Path | None = None
     # write everything
     export.write_json(out / "event.json", {
         "event_id": cfg["event_id"], "name": cfg["name"], "time_utc": cfg["time_utc"], "epicentre": cfg["epicentre"],
-        "bbox": bbox, "maturity": cfg["maturity"], "mock": False, "references": cfg["references"]})
+        "bbox": bbox, "maturity": cfg["maturity"], "mock": False,
+        "optical": export.optical_entry(cfg, out), "references": cfg["references"]})
     export.write_json(out / "pairs.json", entries)
     export.write_json(out / "landslides.geojson", export.feature_collection(features), compact=True)
     export.write_json(out / "unknown.geojson", export.feature_collection(unknown_feats), compact=True)

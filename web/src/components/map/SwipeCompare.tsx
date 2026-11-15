@@ -4,7 +4,7 @@ import { useApp } from '../../lib/AppState.tsx';
 import { C, fill } from '../../lib/content.ts';
 import { ready, useData } from '../../lib/DataContext.tsx';
 import { fmtDayYear, hoursBetween } from '../../lib/format.ts';
-import { FLY_MIN_ZOOM } from '../../lib/mapStyle.ts';
+import { FIT_PADDING_PX, FLY_MIN_ZOOM, FLY_MS } from '../../lib/mapStyle.ts';
 import { FeaturePopup } from './FeaturePopup.tsx';
 import { MapCanvas } from './MapCanvas.tsx';
 
@@ -35,7 +35,7 @@ function syncCameras(a: MapLibreMap, b: MapLibreMap): () => void {
 /** Before and after radar images side by side: drag the divider (mouse, touch or arrow keys) to compare. */
 export function SwipeCompare({ onAfterMap }: { onAfterMap?: (map: MapLibreMap | null) => void }) {
   const { event, pairs } = useData();
-  const { pairId, flyNonce, selected } = useApp();
+  const { pairId, flyNonce, fitNonce, selected, compareMode } = useApp();
   const [pct, setPct] = useState(START_PCT);
   const [before, setBefore] = useState<MapLibreMap | null>(null);
   const [after, setAfter] = useState<MapLibreMap | null>(null);
@@ -59,10 +59,21 @@ export function SwipeCompare({ onAfterMap }: { onAfterMap?: (map: MapLibreMap | 
   // picking a feature in a list: fly there (the other map follows)
   useEffect(() => {
     if (!flyNonce || !selected || !after) return;
-    after.flyTo({ center: selected.lngLat, zoom: Math.max(after.getZoom(), FLY_MIN_ZOOM) });
+    const target = { center: selected.lngLat, zoom: Math.max(after.getZoom(), FLY_MIN_ZOOM) };
+    // people who ask for less motion get an instant jump instead of a flight
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) after.jumpTo(target);
+    else after.flyTo({ ...target, duration: FLY_MS });
     // only a new request moves the camera, not later selection changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flyNonce]);
+
+  // a guided step asks for the whole area again
+  useEffect(() => {
+    if (!fitNonce || !after || !e) return;
+    const [w, s, ea, n] = e.bbox;
+    after.fitBounds([[w, s], [ea, n]], { padding: FIT_PADDING_PX, duration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : FLY_MS });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fitNonce]);
 
   const clamp = (v: number) => Math.min(FULL_PCT, Math.max(0, v));
   const moveTo = (clientX: number) => {
@@ -96,11 +107,14 @@ export function SwipeCompare({ onAfterMap }: { onAfterMap?: (map: MapLibreMap | 
   };
 
   const hours = e && pair ? hoursBetween(e.time_utc, pair.after) : null;
-  const afterLabel = pair
+  const mode = e?.optical ? compareMode : 'radar';
+  const radarAfter = pair
     ? hours !== null && hours >= 0 && hours < SAME_DAY_HOURS
       ? fill(C.swipe.afterHours, { date: fmtDayYear(pair.after), hours })
       : fill(C.swipe.after, { date: fmtDayYear(pair.after) })
     : null;
+  const beforeLabel = !pair ? null : mode === 'radar' ? fill(C.swipe.before, { date: fmtDayYear(pair.before) }) : mode === 'optical' ? C.explorer.opticalBefore : C.explorer.opticalAfter;
+  const afterLabel = mode === 'optical' ? C.explorer.opticalAfter : radarAfter;
 
   return (
     <div ref={box} className="absolute inset-0 overflow-hidden">
@@ -115,7 +129,7 @@ export function SwipeCompare({ onAfterMap }: { onAfterMap?: (map: MapLibreMap | 
       {pair && (
         <>
           <p className="pointer-events-none absolute left-2 top-2 z-10 rounded bg-slate-900/75 px-2 py-0.5 text-xs font-medium text-white">
-            {fill(C.swipe.before, { date: fmtDayYear(pair.before) })}
+            {beforeLabel}
           </p>
           <p className="pointer-events-none absolute right-12 top-2 z-10 max-w-[55%] rounded bg-slate-900/75 px-2 py-0.5 text-right text-xs font-medium text-white">
             {afterLabel}

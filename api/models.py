@@ -27,6 +27,15 @@ class Reference(Strict):
     url: str
 
 
+class Optical(Strict):
+    before_webp: str
+    after_webp: str
+    bounds: tuple[LonLat, LonLat, LonLat, LonLat]
+    before_caption: str
+    after_caption: str
+    attribution: str
+
+
 class EventInfo(Strict):
     event_id: str
     name: str
@@ -35,6 +44,7 @@ class EventInfo(Strict):
     bbox: tuple[float, float, float, float]
     maturity: str
     mock: bool
+    optical: Optical | None
     references: list[Reference]
 
 

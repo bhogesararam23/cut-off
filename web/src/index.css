@@ -1,1 +1,52 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  --color-ink: #0b1e3a;
+  --color-paper: #f7f7f4;
+  --color-brand: #e8a33d;
+  --color-slide: #d1495b;
+  --radius-card: 6px;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 64px;
+}
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+:focus-visible {
+  outline: 3px solid #1d6fd6;
+  outline-offset: 2px;
+}
+
+/* people who ask for less motion get none */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media print {
+  header nav,
+  #map,
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+}

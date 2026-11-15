@@ -23,52 +23,90 @@ const LAYER_GROUPS: Record<LayerKey, string[]> = {
   radar: [LAYER_IDS.hv],
   change: [LAYER_IDS.change],
   landslides: [LAYER_IDS.landslides, LAYER_IDS.landslidesOutline],
-  roads: [LAYER_IDS.roads, LAYER_IDS.roadsBlocked],
-  communities: [LAYER_IDS.communities, LAYER_IDS.communitiesRing],
+  roads: [LAYER_IDS.roads, LAYER_IDS.roadsCasing, LAYER_IDS.roadsRisk, LAYER_IDS.roadsBlocked],
+  communities: [LAYER_IDS.communities, LAYER_IDS.communitiesTriangle],
   unknown: [LAYER_IDS.unknown],
 };
 
+const ICON_PX = 28;
+
+/** Small pictures drawn here (no image files): a triangle for possibly-cut-off places and a hatch for unseen ground. */
+function addIcons(map: MapLibreMap) {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = ICON_PX;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  ctx.beginPath();
+  ctx.moveTo(ICON_PX / 2, 4);
+  ctx.lineTo(ICON_PX - 4, ICON_PX - 5);
+  ctx.lineTo(4, ICON_PX - 5);
+  ctx.closePath();
+  ctx.fillStyle = COLORS.ink;
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = '#ffffff';
+  ctx.stroke();
+  map.addImage('triangle', ctx.getImageData(0, 0, ICON_PX, ICON_PX), { pixelRatio: 2 });
+  ctx.clearRect(0, 0, ICON_PX, ICON_PX);
+  ctx.strokeStyle = COLORS.unknown;
+  ctx.lineWidth = 2;
+  for (const o of [-ICON_PX, 0, ICON_PX]) {
+    ctx.beginPath();
+    ctx.moveTo(o, ICON_PX);
+    ctx.lineTo(o + ICON_PX, 0);
+    ctx.stroke();
+  }
+  map.addImage('hatch', ctx.getImageData(0, 0, ICON_PX, ICON_PX), { pixelRatio: 2 });
+}
+
 function addVectorLayers(map: MapLibreMap) {
+  addIcons(map);
   for (const id of [SOURCE_IDS.unknown, SOURCE_IDS.landslides, SOURCE_IDS.roads, SOURCE_IDS.communities]) {
     map.addSource(id, { type: 'geojson', data: EMPTY as never });
   }
-  map.addLayer({
-    id: LAYER_IDS.unknown, type: 'fill', source: SOURCE_IDS.unknown,
-    paint: { 'fill-color': COLORS.unknown, 'fill-opacity': 0.35 },
-  });
+  map.addLayer({ id: LAYER_IDS.unknown, type: 'fill', source: SOURCE_IDS.unknown, paint: { 'fill-pattern': 'hatch', 'fill-opacity': 0.7 } });
   map.addLayer({
     id: LAYER_IDS.landslides, type: 'fill', source: SOURCE_IDS.landslides,
-    paint: { 'fill-color': COLORS.landslide, 'fill-opacity': ['match', ['get', 'confidence'], 'high', 0.75, 'medium', 0.55, 0.3] },
+    paint: { 'fill-color': COLORS.landslide, 'fill-opacity': ['match', ['get', 'confidence'], 'high', 0.85, 'medium', 0.65, 0.4] },
   });
   map.addLayer({
     id: LAYER_IDS.landslidesOutline, type: 'line', source: SOURCE_IDS.landslides,
     paint: { 'line-color': COLORS.landslideOutline, 'line-width': 1 },
   });
-  const roadColor = [
-    'match', ['get', 'status'],
-    'blocked', COLORS.roads.blocked, 'at_risk', COLORS.roads.at_risk, 'clear', COLORS.roads.clear, COLORS.roads.unknown,
-  ] as never;
-  const roadWidth = ['case', ['==', ['get', 'highway'], 'primary'], 3, 2] as never;
+  const status = (s: string) => ['==', ['get', 'status'], s] as never;
+  const width = ['case', ['==', ['get', 'highway'], 'primary'], 2.5, ['==', ['get', 'highway'], 'trunk'], 2.5, 1.2] as never;
+  // open and unknown roads: grey, solid (unknown is lighter)
   map.addLayer({
-    id: LAYER_IDS.roads, type: 'line', source: SOURCE_IDS.roads, filter: ['!=', ['get', 'status'], 'blocked'],
-    paint: { 'line-color': roadColor, 'line-width': roadWidth },
+    id: LAYER_IDS.roads, type: 'line', source: SOURCE_IDS.roads, filter: ['in', ['get', 'status'], ['literal', ['clear', 'unknown']]] as never,
+    paint: { 'line-color': ['match', ['get', 'status'], 'unknown', COLORS.roads.unknown, COLORS.roads.clear] as never, 'line-width': width },
+  });
+  // a dark casing keeps the amber lines readable on bright radar images
+  map.addLayer({
+    id: LAYER_IDS.roadsCasing, type: 'line', source: SOURCE_IDS.roads, filter: ['in', ['get', 'status'], ['literal', ['blocked', 'at_risk']]] as never,
+    paint: { 'line-color': COLORS.ink, 'line-width': 6 },
   });
   map.addLayer({
-    id: LAYER_IDS.roadsBlocked, type: 'line', source: SOURCE_IDS.roads, filter: ['==', ['get', 'status'], 'blocked'],
-    paint: { 'line-color': COLORS.roads.blocked, 'line-width': ['case', ['==', ['get', 'highway'], 'primary'], 4, 3] as never, 'line-dasharray': [2, 1.5] },
+    id: LAYER_IDS.roadsRisk, type: 'line', source: SOURCE_IDS.roads, filter: status('at_risk'), layout: { 'line-cap': 'round' },
+    paint: { 'line-color': COLORS.roads.at_risk, 'line-width': 3, 'line-dasharray': [0.1, 2] },
   });
   map.addLayer({
-    id: LAYER_IDS.communitiesRing, type: 'circle', source: SOURCE_IDS.communities, filter: ['==', ['get', 'status'], 'cut_off'],
-    paint: { 'circle-radius': 11, 'circle-color': '#ffffff', 'circle-opacity': 0, 'circle-stroke-color': COLORS.communities.cut_off, 'circle-stroke-width': 2 },
+    id: LAYER_IDS.roadsBlocked, type: 'line', source: SOURCE_IDS.roads, filter: status('blocked'),
+    paint: { 'line-color': COLORS.roads.blocked, 'line-width': 4, 'line-dasharray': [2, 1.2] },
   });
+  // reachable: hollow circle; unknown: grey dot; possibly cut off: amber ring with a triangle on top
   map.addLayer({
     id: LAYER_IDS.communities, type: 'circle', source: SOURCE_IDS.communities,
     paint: {
-      'circle-radius': 6,
-      'circle-color': ['match', ['get', 'status'], 'cut_off', COLORS.communities.cut_off, 'reachable', COLORS.communities.reachable, COLORS.communities.unknown] as never,
-      'circle-stroke-color': '#ffffff',
-      'circle-stroke-width': ['case', ['==', ['get', 'status'], 'cut_off'], 3, 1.5] as never,
+      'circle-radius': ['match', ['get', 'status'], 'cut_off', 11, 'unknown', 3.5, 4.5] as never,
+      'circle-color': ['match', ['get', 'status'], 'unknown', COLORS.communities.unknown, '#ffffff'] as never,
+      'circle-opacity': ['match', ['get', 'status'], 'cut_off', 0.25, 'unknown', 1, 0.9] as never,
+      'circle-stroke-color': ['match', ['get', 'status'], 'cut_off', COLORS.amber, 'unknown', '#ffffff', COLORS.ink] as never,
+      'circle-stroke-width': ['match', ['get', 'status'], 'cut_off', 3, 'unknown', 1, 1.5] as never,
     },
+  });
+  map.addLayer({
+    id: LAYER_IDS.communitiesTriangle, type: 'symbol', source: SOURCE_IDS.communities, filter: status('cut_off'),
+    layout: { 'icon-image': 'triangle', 'icon-allow-overlap': true, 'icon-ignore-placement': true },
   });
 }
 
@@ -84,7 +122,7 @@ function setImage(map: MapLibreMap, id: string, url: string, coordinates: Pair['
 
 function epicentreMarker(): HTMLElement {
   const el = document.createElement('div');
-  el.className = 'pointer-events-none flex flex-col items-center text-[11px] font-semibold text-slate-900';
+  el.className = 'pointer-events-none flex flex-col items-center text-[11px] font-semibold text-[#0B1E3A]';
   el.setAttribute('role', 'img');
   el.setAttribute('aria-label', C.legend.epicentre);
   const star = document.createElement('span');
@@ -105,7 +143,7 @@ interface Props {
 /** One MapLibre map: basemap, the radar image for its side, and all vector layers. */
 export function MapCanvas({ side, onMap }: Props) {
   const data = useData();
-  const { layers, pairId, select } = useApp();
+  const { layers, pairId, select, compareMode, radarOpacity } = useApp();
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const selectRef = useRef(select);
@@ -188,13 +226,26 @@ export function MapCanvas({ side, onMap }: Props) {
     for (const [id, fc] of Object.entries(files)) if (fc) (map.getSource(id) as GeoJSONSource).setData(fc as never);
   }, [loaded, data.unknown, data.landslides, data.roads, data.communities]);
 
-  // radar images for the selected pair
+  // the image for this side: radar or optical, depending on the compare mode
+  const optical = event?.optical ?? null;
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !loaded || !pair) return;
-    setImage(map, SOURCE_IDS.hv, assetUrl(side === 'before' ? pair.before_png : pair.after_png), pair.bounds, 0.9);
+    const mode = optical ? compareMode : 'radar';
+    const useOptical = mode === 'optical' || (mode === 'mixed' && side === 'before');
+    const url = useOptical && optical
+      ? assetUrl(side === 'before' && mode === 'optical' ? optical.before_webp : optical.after_webp)
+      : assetUrl(side === 'before' ? pair.before_png : pair.after_png);
+    setImage(map, SOURCE_IDS.hv, url, useOptical && optical ? optical.bounds : pair.bounds, radarOpacity);
     if (side === 'after') setImage(map, SOURCE_IDS.change, assetUrl(pair.change_png), pair.bounds, 0.8);
-  }, [loaded, pair, side]);
+    // opacity is applied by the next effect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, pair, side, compareMode, optical]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (map && loaded && map.getLayer(LAYER_IDS.hv)) map.setPaintProperty(LAYER_IDS.hv, 'raster-opacity', radarOpacity);
+  }, [loaded, radarOpacity, pair, compareMode]);
 
   // layer toggles (also re-applied after images are added)
   useEffect(() => {
@@ -203,7 +254,7 @@ export function MapCanvas({ side, onMap }: Props) {
     for (const [key, ids] of Object.entries(LAYER_GROUPS) as [LayerKey, string[]][]) {
       for (const id of ids) if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', layers[key] ? 'visible' : 'none');
     }
-  }, [loaded, layers, pair]);
+  }, [loaded, layers, pair, compareMode]);
 
   if (failed) {
     return (

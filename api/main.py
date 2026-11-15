@@ -24,7 +24,7 @@ VERSION = "0.1.0"
 CACHE_CONTROL = "public, max-age=300"
 DEFAULT_CORS_ORIGINS = ["http://localhost:5173"]
 CONFIDENCE_RANK = {"low": 1, "medium": 2, "high": 3}
-MEDIA_TYPES = {".png": "image/png", ".json": "application/json", ".geojson": "application/geo+json"}
+MEDIA_TYPES = {".png": "image/png", ".webp": "image/webp", ".json": "application/json", ".geojson": "application/geo+json"}
 MAX_AREA_M2 = 1e9
 
 log = logging.getLogger("cutoff.api")
