@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import type { TabId } from './content.ts';
+import { DESKTOP_QUERY } from './useMedia.ts';
 import type { CommunityProps, LandslideProps, PairId, RoadProps } from './types.ts';
 
 export type LayerKey = 'radar' | 'change' | 'landslides' | 'roads' | 'communities' | 'unknown';
@@ -48,8 +49,6 @@ interface AppState {
   flyNonce: number;
   /** changes when the map should show the whole area again */
   fitNonce: number;
-  sheetOpen: boolean;
-  setSheetOpen: (open: boolean) => void;
 }
 
 const Ctx = createContext<AppState | null>(null);
@@ -63,7 +62,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [selected, select] = useState<Picked | null>(null);
   const [flyNonce, setFlyNonce] = useState(0);
   const [fitNonce, setFitNonce] = useState(0);
-  const [sheetOpen, setSheetOpen] = useState(false);
 
   const toggleLayer = useCallback((k: LayerKey) => setLayers((l) => ({ ...l, [k]: !l[k] })), []);
   const setTab = useCallback((t: TabId) => {
@@ -75,15 +73,16 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const focusFeature = useCallback((p: Picked) => {
     select(p);
     setFlyNonce((n) => n + 1);
-    setSheetOpen(false); // on a phone, reveal the map
+    // on a phone the list sits below the map: bring the map into view
+    if (!window.matchMedia(DESKTOP_QUERY).matches) document.getElementById('map-canvas')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   }, []);
 
   const value = useMemo(
     () => ({
       pairId, setPairId, tab, setTab, layers, toggleLayer, compareMode, setCompareMode, radarOpacity, setRadarOpacity,
-      selected, select, focusFeature, flyNonce, fitNonce, sheetOpen, setSheetOpen,
+      selected, select, focusFeature, flyNonce, fitNonce,
     }),
-    [pairId, tab, setTab, layers, toggleLayer, compareMode, radarOpacity, selected, focusFeature, flyNonce, fitNonce, sheetOpen],
+    [pairId, tab, setTab, layers, toggleLayer, compareMode, radarOpacity, selected, focusFeature, flyNonce, fitNonce],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

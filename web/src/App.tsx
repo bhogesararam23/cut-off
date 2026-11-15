@@ -1,5 +1,4 @@
 import { lazy, Suspense, useEffect, useRef } from 'react';
-import { BottomSheet } from './components/BottomSheet.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 import { Header } from './components/Header.tsx';
 import { OnThisPage } from './components/OnThisPage.tsx';
@@ -39,24 +38,23 @@ function Explorer() {
     if (near) requestMapData();
   }, [near, requestMapData]);
   return (
-    <section ref={ref} id="map" aria-label={C.explorer.heading} className="relative flex h-[calc(100dvh-56px)] min-h-[520px] scroll-mt-14 border-y border-ink/20">
+    <section ref={ref} id="map" aria-label={C.explorer.heading} className="relative scroll-mt-14 border-y border-ink/20">
       {desktop ? (
-        <>
+        <div className="flex h-[calc(100dvh-56px)] min-h-[520px]">
           <aside className="w-[35%] max-w-[460px] min-w-[340px] shrink-0 border-r border-ink/20">
             <TabbedPanel />
           </aside>
-          <div className="relative min-w-0 flex-1">
+          <div id="map-canvas" className="relative min-w-0 flex-1">
             <MapSlot show={near} />
           </div>
-        </>
+        </div>
       ) : (
         <>
-          <div className="absolute inset-x-0 top-0 bottom-[35%]">
+          {/* phone and tablet: the map on top, the steps and their text below it in the normal page flow */}
+          <div id="map-canvas" className="relative h-[62dvh] min-h-[340px] scroll-mt-14">
             <MapSlot show={near} />
           </div>
-          <BottomSheet>
-            <TabbedPanel />
-          </BottomSheet>
+          <TabbedPanel flow />
         </>
       )}
     </section>

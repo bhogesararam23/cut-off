@@ -186,7 +186,6 @@ export const C = {
   },
   explorer: {
     heading: 'Map',
-    stepLabel: 'Step {n} of {total}',
     compare: 'Compare',
     modes: { radar: 'Radar before | after', optical: 'Optical before | after', mixed: 'Optical after | Radar after' },
     opacity: 'Radar layer opacity',
