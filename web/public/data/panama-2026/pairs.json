@@ -27,7 +27,7 @@
       ]
     ],
     "granules": [],
-    "flagged_pixels": 1316
+    "flagged_pixels": 64291
   },
   {
     "id": "t4a",
@@ -57,7 +57,7 @@
       ]
     ],
     "granules": [],
-    "flagged_pixels": 2878
+    "flagged_pixels": 8624
   },
   {
     "id": "t40d",
@@ -87,7 +87,7 @@
       ]
     ],
     "granules": [],
-    "flagged_pixels": 2883
+    "flagged_pixels": 144943
   },
   {
     "id": "t76a",
@@ -117,6 +117,6 @@
       ]
     ],
     "granules": [],
-    "flagged_pixels": 896
+    "flagged_pixels": 50861
   }
 ]

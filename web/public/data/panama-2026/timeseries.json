@@ -3,63 +3,63 @@
     "date": "2026-09-20T23:45:16Z",
     "track": 40,
     "direction": "descending",
-    "hv_landslide_db": -13.0,
-    "hv_forest_db": -13.0
+    "hv_landslide_db": -13.6,
+    "hv_forest_db": -11.8
   },
   {
     "date": "2026-09-27T23:53:35Z",
     "track": 141,
     "direction": "descending",
-    "hv_landslide_db": -12.8,
-    "hv_forest_db": -13.0
+    "hv_landslide_db": -10.8,
+    "hv_forest_db": -10.9
   },
   {
     "date": "2026-09-30T11:04:20Z",
     "track": 4,
     "direction": "ascending",
-    "hv_landslide_db": -13.2,
-    "hv_forest_db": -13.3
+    "hv_landslide_db": -15.9,
+    "hv_forest_db": -16.2
   },
   {
     "date": "2026-10-02T23:45:16Z",
     "track": 40,
     "direction": "descending",
-    "hv_landslide_db": -13.4,
-    "hv_forest_db": -13.0
+    "hv_landslide_db": -12.7,
+    "hv_forest_db": -12.0
   },
   {
     "date": "2026-10-05T10:56:04Z",
     "track": 76,
     "direction": "ascending",
-    "hv_landslide_db": -13.3,
-    "hv_forest_db": -13.2
+    "hv_landslide_db": -11.9,
+    "hv_forest_db": -11.3
   },
   {
     "date": "2026-10-09T23:53:35Z",
     "track": 141,
     "direction": "descending",
-    "hv_landslide_db": -18.3,
-    "hv_forest_db": -13.0
+    "hv_landslide_db": -12.3,
+    "hv_forest_db": -11.0
   },
   {
     "date": "2026-10-12T11:04:20Z",
     "track": 4,
     "direction": "ascending",
-    "hv_landslide_db": -17.9,
-    "hv_forest_db": -13.3
+    "hv_landslide_db": -17.6,
+    "hv_forest_db": -16.1
   },
   {
     "date": "2026-10-14T23:45:16Z",
     "track": 40,
     "direction": "descending",
-    "hv_landslide_db": -17.9,
-    "hv_forest_db": -13.0
+    "hv_landslide_db": -14.7,
+    "hv_forest_db": -12.0
   },
   {
     "date": "2026-10-17T10:56:04Z",
     "track": 76,
     "direction": "ascending",
-    "hv_landslide_db": -18.2,
-    "hv_forest_db": -12.6
+    "hv_landslide_db": -13.2,
+    "hv_forest_db": -11.1
   }
 ]

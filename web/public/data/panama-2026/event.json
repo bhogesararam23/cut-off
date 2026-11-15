@@ -13,7 +13,7 @@
     8.0
   ],
   "maturity": "PROVISIONAL",
-  "mock": true,
+  "mock": false,
   "references": [
     {
       "label": "Copernicus EMS EMSR934",
