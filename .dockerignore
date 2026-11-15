@@ -1,0 +1,7 @@
+# Allowlist: nothing goes into the build unless it is listed below.
+# This keeps out .git, raw radar data (*.tif), work files, the pipeline, web/node_modules, web/dist,
+# environment files, local tooling and anything else not needed to run the API.
+*
+!api/requirements.txt
+!api/*.py
+!web/public/data/**

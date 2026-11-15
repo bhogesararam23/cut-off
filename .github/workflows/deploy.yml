@@ -1,0 +1,157 @@
+name: Deploy
+
+# Runs only after CI succeeded on a push to main, or by hand from main.
+# Never runs for pull requests, so forks cannot reach any secret.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.repository }}
+  cancel-in-progress: false
+
+env:
+  # The exact commit that passed CI (or, for a manual run, the commit being run)
+  DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+jobs:
+  api:
+    name: API to Azure
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write # needed for the passwordless Azure login (OIDC)
+    env:
+      AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+      AZURE_WEBAPP_NAME: ${{ vars.AZURE_WEBAPP_NAME }}
+      ACR_NAME: ${{ vars.ACR_NAME }}
+      SITE_ORIGIN: ${{ vars.SITE_ORIGIN }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+          persist-credentials: false
+
+      - name: Check settings are present
+        run: |
+          for v in AZURE_RESOURCE_GROUP AZURE_WEBAPP_NAME ACR_NAME SITE_ORIGIN; do
+            if [ -z "${!v}" ]; then echo "::error::repository variable $v is not set"; exit 1; fi
+          done
+
+      - name: Log in to Azure (OIDC, no stored password)
+        uses: azure/login@053f7285eb20bf5469ef084617b0b24d3cec53fc # v3.1.0
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log in to the container registry
+        run: az acr login --name "$ACR_NAME"
+
+      - name: Build and push the image (tagged with the commit)
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          file: api/Dockerfile
+          push: true
+          tags: ${{ vars.ACR_NAME }}.azurecr.io/cutoff-api:${{ env.DEPLOY_SHA }}
+          provenance: false
+
+      - name: Point the web app at the new image and set its settings
+        run: |
+          set -euo pipefail
+          IMAGE="${ACR_NAME}.azurecr.io/cutoff-api:${DEPLOY_SHA}"
+          HOST=$(az webapp show -g "$AZURE_RESOURCE_GROUP" -n "$AZURE_WEBAPP_NAME" --query defaultHostName -o tsv)
+          az webapp config appsettings set -g "$AZURE_RESOURCE_GROUP" -n "$AZURE_WEBAPP_NAME" \
+            --settings WEBSITES_PORT=8000 DATA_DIR=/app/data "CORS_ORIGINS=${SITE_ORIGIN}" "PUBLIC_URL=https://${HOST}" \
+            --output none
+          az webapp config container set -g "$AZURE_RESOURCE_GROUP" -n "$AZURE_WEBAPP_NAME" \
+            --container-image-name "$IMAGE" --container-registry-url "https://${ACR_NAME}.azurecr.io" \
+            --output none
+          az webapp restart -g "$AZURE_RESOURCE_GROUP" -n "$AZURE_WEBAPP_NAME"
+          echo "APP_URL=https://${HOST}" >> "$GITHUB_ENV"
+
+      - name: Wait for the health check (up to 3 minutes)
+        run: |
+          set -u
+          for i in $(seq 1 18); do
+            body=$(curl -fsS --max-time 10 "${APP_URL}/api/health" 2>/dev/null || true)
+            if printf '%s' "$body" | grep -q '"status":"ok"'; then echo "API is healthy"; exit 0; fi
+            echo "not ready yet (try $i of 18)"; sleep 10
+          done
+          echo "::error::the API did not report ok within 3 minutes"
+          exit 1
+
+  web:
+    name: Website to Cloudflare Pages
+    # Independent of the API job: a failed API deploy does not stop the website.
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      CF_PAGES_PROJECT: ${{ vars.CF_PAGES_PROJECT }}
+      SITE_ORIGIN: ${{ vars.SITE_ORIGIN }}
+      VITE_API_URL: ${{ vars.API_URL }}
+      REQUIRE_REAL_DATA: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+          persist-credentials: false
+
+      - name: Check settings are present
+        run: |
+          for v in CF_PAGES_PROJECT SITE_ORIGIN; do
+            if [ -z "${!v}" ]; then echo "::error::repository variable $v is not set"; exit 1; fi
+          done
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install, test, build
+        working-directory: web
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@2ef9f398b9175c68f953e40d679493850d640a85 # v4.1.3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy web/dist --project-name=${{ vars.CF_PAGES_PROJECT }} --branch=main --commit-hash=${{ env.DEPLOY_SHA }} --commit-dirty=true
+
+      - name: Check the live site (up to 3 minutes)
+        run: |
+          set -u
+          ok=0
+          for i in $(seq 1 18); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "${SITE_ORIGIN}/" || true)
+            if [ "$code" = "200" ]; then ok=1; break; fi
+            echo "site answered $code (try $i of 18)"; sleep 10
+          done
+          [ "$ok" = "1" ] || { echo "::error::the site did not answer 200"; exit 1; }
+          stats=$(curl -fsS --max-time 10 "${SITE_ORIGIN}/data/panama-2026/stats.json")
+          if printf '%s' "$stats" | grep -Eq '"mock"[[:space:]]*:[[:space:]]*false'; then
+            echo "site is live with real data"
+          else
+            echo "::error::stats.json on the live site does not say \"mock\": false"; exit 1
+          fi

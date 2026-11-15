@@ -1,101 +1,60 @@
 # Deploying Cut Off
 
-Two pieces, hosted separately:
+Two pieces, hosted separately and deployed by GitHub Actions (`.github/workflows/deploy.yml`):
 
-| Piece | Where | What it does |
+| Piece | Where | How |
 |---|---|---|
-| Website (`web/`) | Cloudflare Pages | The map app. A static site: it can show everything on its own from the data files it ships with. |
-| API (`api/`) | Azure App Service (Linux, Python) | A small read-only service that serves the same data files. Optional: if it is down or asleep the website falls back to its own copy of the files. |
+| API (`api/`) | Azure App Service for Containers (Linux) | A Docker image built from `api/Dockerfile`, pushed to Azure Container Registry, tagged with the commit hash |
+| Website (`web/`) | Cloudflare Pages | `npm run build`, then `wrangler pages deploy web/dist` |
 
-Nothing here needs a secret in the repository. Each service is configured in its own dashboard. Turn on two-factor sign-in on both accounts.
+The website works on its own from the data files it ships with. The API is optional: if it is down or asleep the site falls back to its own copy.
 
-**Order:** push the repository, then create the API, then the website, then tell the API the website's address.
+## How a deploy runs
+1. A push to `main` runs CI (`ci.yml`). When CI succeeds, `deploy.yml` starts for that exact commit. It can also be started by hand from `main` (Actions, Deploy, Run workflow). It never runs for pull requests, so forks cannot reach any secret.
+2. Job **api**: log in to Azure without a stored password (OIDC), build the image, push `cutoff-api:<commit hash>` to the registry, point the web app at that image, set its app settings, restart, then call `/api/health` for up to 3 minutes and fail if it does not answer `ok`.
+3. Job **web**: `npm ci`, `npm test`, `npm run build` (fails on mock data), deploy to Cloudflare Pages, then check the site answers 200 and `/data/panama-2026/stats.json` says `"mock": false`.
 
-## Before you start
-1. The data in `web/public/data/` must be real results, not mock data. A real processing run writes `"mock": false` into `event.json` and `stats.json`. The API packaging script and the website build (when asked) both stop if they still see mock data.
-2. The tests pass: `cd pipeline && pytest -q`, `cd api && pytest -q`, `cd web && npm test && npm run build`.
-3. Push the repository to GitHub (public).
+The two jobs do not depend on each other: if the API deploy fails, the website still deploys, and the failed job is shown in the run.
 
-## 1. API on Azure App Service
+## The image
+`docker build -f api/Dockerfile -t cutoff-api .` (run from the repository root). It uses a pinned `python:3.11-slim`, installs only `api/requirements.txt`, and copies only `api/*.py` and the data in `web/public/data`. It runs as a non-root user (uid 10001) on port 8000, has a health check, and the build fails if `event.json` or `stats.json` says `"mock": true`. `.dockerignore` keeps raw radar files, work files, pipeline code, environment files and local tooling out of the build.
 
-> These commands were written for the Azure CLI (`az`) but have **not been run**: it was not installed where this was prepared. Read the output of each command; if one is rejected, the portal offers the same settings (App Services, then Create, then Web App).
+## Secrets and variables
+All credentials live only in the repository's GitHub settings (Settings, Secrets and variables, Actions). None is stored in the code, the image or the logs.
 
-Choose a unique app name (it becomes `https://<app-name>.azurewebsites.net`) and a region near you.
+Secrets:
+- `AZURE_CLIENT_ID`
+- `AZURE_TENANT_ID`
+- `AZURE_SUBSCRIPTION_ID`
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
 
-```bash
-az login
-az group create --name cut-off-rg --location <region>
-az appservice plan create --name cut-off-plan --resource-group cut-off-rg --sku F1 --is-linux
-az webapp create --name <app-name> --resource-group cut-off-rg --plan cut-off-plan --runtime "PYTHON:3.11"
-```
+Variables (not secret):
+- `AZURE_RESOURCE_GROUP`
+- `AZURE_WEBAPP_NAME`
+- `ACR_NAME` (registry name, without `.azurecr.io`)
+- `CF_PAGES_PROJECT`
+- `SITE_ORIGIN` (the website's origin, for example `https://<project>.pages.dev`; no path, no trailing slash). It becomes the API's allowed CORS origin and is used for the site check.
+- `API_URL` (the API's `https://<app>.azurewebsites.net` address; the site build adds it to its content security policy. Leave it unset to build a site that only uses its own files.)
 
-The free tier (`F1`) has a daily compute limit and no "always on", so the first request after a quiet spell is slow. That is fine here because the website falls back to its own files. If the free tier is not offered for your subscription or region, use `B1`.
+The Azure login has no client secret: GitHub proves its identity with a short-lived token, and Azure trusts only this repository's `main` branch (a federated credential). The identity has Contributor on the one resource group and AcrPush on the registry. The web app pulls the image from the registry with its own managed identity (AcrPull).
 
-Settings (replace the two addresses once you know them; `CORS_ORIGINS` must be the website's exact origin, with no path and no `*`):
+## One-time setup
+The numbered steps are in the project hand-off notes; in short: create the resource group, registry, App Service plan and Web App for Containers; create the Entra app registration with a federated credential for `main` and give it the two roles; create the Cloudflare Pages project and a token limited to Pages edit on that account; add the secrets and variables above; run the workflow.
 
-```bash
-az webapp config set --name <app-name> --resource-group cut-off-rg --startup-file "python -m uvicorn main:app --host 0.0.0.0 --port 8000"
-az webapp config appsettings set --name <app-name> --resource-group cut-off-rg --settings \
-  DATA_DIR=data WEBSITES_PORT=8000 SCM_DO_BUILD_DURING_DEPLOYMENT=true \
-  CORS_ORIGINS=https://<your-site>.pages.dev PUBLIC_URL=https://<app-name>.azurewebsites.net
-az webapp update --name <app-name> --resource-group cut-off-rg --https-only true
-az webapp config set --name <app-name> --resource-group cut-off-rg --min-tls-version 1.2 --ftps-state Disabled
-```
+Do not switch on App Service's own CORS feature: the API applies its own allowlist from `CORS_ORIGINS`.
 
-Do not switch on App Service's own CORS feature: the API applies its own allowlist.
-
-Package and deploy (from the repository folder). The packaging script puts the API code, its runtime requirements and the data files into one zip, and refuses mock data:
-
-```bash
-python scripts/package_api.py
-az webapp deploy --name <app-name> --resource-group cut-off-rg --src-path build/api-package.zip --type zip
-```
-
-Check it:
-
+## Checking by hand
 ```bash
 curl https://<app-name>.azurewebsites.net/api/health
+curl -I https://<your-site>.pages.dev/
 ```
+The first should answer `{"status":"ok","version":"0.1.0"}`. If the API fails, `az webapp log tail --name <app-name> --resource-group <resource-group>` shows the server log.
 
-It should answer `{"status":"ok","version":"0.1.0"}`. Open `https://<app-name>.azurewebsites.net/docs` to see every endpoint. If something fails, `az webapp log tail --name <app-name> --resource-group cut-off-rg` shows the server log.
-
-To publish new data later, repeat the two deploy commands.
-
-## 2. Website on Cloudflare Pages
-
-In the Cloudflare dashboard: **Workers & Pages, Create, Pages, Connect to Git**, pick the repository, then:
-
-| Setting | Value |
-|---|---|
-| Production branch | `main` |
-| Framework preset | None |
-| Root directory | `web` |
-| Build command | `npm ci && npm run build` |
-| Build output directory | `dist` |
-
-Environment variables (Settings, Variables and secrets). None of them is a secret: every `VITE_*` value ends up in the public page.
-
-| Variable | Value | Why |
-|---|---|---|
-| `NODE_VERSION` | `24` | the Node version the build expects |
-| `REQUIRE_REAL_DATA` | `1` | the build fails if the data files still say `mock: true` |
-| `VITE_API_URL` | `https://<app-name>.azurewebsites.net` | read the data through the API. Leave it out to use only the files shipped with the site |
-| `VITE_REPO_URL` | the public address of the GitHub repository | shows the code, method and AI-use links in the About window |
-
-When `VITE_API_URL` is set, the build adds that address to the site's content security policy automatically (see `web/public/_headers`). Any other value is rejected.
-
-Save and deploy. The site is live at `https://<project>.pages.dev`.
-
-## 3. Connect the two
-1. Put the site's address into the API's `CORS_ORIGINS` setting (the command above), then restart the web app: `az webapp restart --name <app-name> --resource-group cut-off-rg`.
-2. Open the site in a private window, on a phone using mobile data. The map, the swipe, the tabs and the radar images should all load. In the browser's network view the data files should come from `azurewebsites.net`.
-3. Stop the API (`az webapp stop ...`) and reload: the site should still work from its own files. Start it again afterwards.
-
-## 4. Before submitting
-- Replace the two `{url}` placeholders at the top of `README.md` with the live site and the video.
-- Refill the results block with real numbers: `python -m cutoff report --readme README.md` (run from `pipeline/`).
+## Before submitting
+- Replace the `{url}` placeholders at the top of `README.md` with the live site and the video.
 - Add the sources actually used to `docs/citations.md` and finish `docs/si-log.md`.
 - Keep every link live and unchanged through judging: do not force-push or delete anything after submitting.
 
 ## Costs and cleanup
-Check the prices for your region before choosing a tier. To remove everything on Azure: `az group delete --name cut-off-rg`.
+Check the prices for your region before choosing a plan. To remove everything on Azure: `az group delete --name <resource-group>`.
