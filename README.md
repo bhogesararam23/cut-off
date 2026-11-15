@@ -13,7 +13,7 @@ Live app: https://cut-off.bhogesara-ram23.workers.dev · API: https://cutoff-api
 | **Sources and licences** | [docs/citations.md](docs/citations.md) |
 | **Use of AI tools** | [docs/si-log.md](docs/si-log.md) |
 
-**Contents:** [Summary](#summary) · [Results](#results) · [How it works](#how-it-works) · [Accuracy](#accuracy) · [Limits](#limits) · [NASA data and other resources](#nasa-data-and-other-resources) · [Technology](#technology) · [Use of AI](#use-of-ai) · [Repository layout](#repository-layout) · [Run it](#run-it) · [Deployment](#deployment) · [Licence](#licence)
+**Contents:** [Summary](#summary) · [Results](#results) · [How it works](#how-it-works) · [Accuracy](#accuracy) · [Limits](#limits) · [NASA data and other resources](#nasa-data-and-other-resources) · [Technology](#technology) · [Team](#team) · [Use of AI](#use-of-ai) · [Repository layout](#repository-layout) · [Run it](#run-it) · [Deployment](#deployment) · [Licence](#licence)
 
 ## Summary
 
@@ -107,6 +107,16 @@ Every source, licence and the date it was added is in [docs/citations.md](docs/c
 - **Quality checks:** 149 pipeline tests, 440 API tests and 38 web tests run in GitHub Actions on every push; a Lighthouse mobile run of the built site scored 100 for performance, accessibility, best practices and SEO.
 
 Libraries and their licences are listed in [docs/citations.md](docs/citations.md).
+
+## Team
+
+| Member | Role | Responsibilities |
+|---|---|---|
+| Ram | Team lead and repository manager | Project scope and planning; NISAR radar data processing and the detection pipeline; validation and scoring; read-only API; web app structure and integration; repository management, reviews and releases; final submission |
+| Hiren | Research and accuracy | Background research on the event and the method; checking the validation check points and the accuracy figures; fact-checking claims and sources; slide, video and submission form text |
+| Mayank | Frontend and testing | Web app pages and map interface; testing on desktop and phone; README and documentation; video editing |
+| Yash | DevOps | CI workflows; deployment of the website (Cloudflare) and the API (Azure); keeping the live site and checks green |
+| Rudra | Charts and visuals | Chart components for the web app, such as detection by landslide size |
 
 ## Use of AI
 

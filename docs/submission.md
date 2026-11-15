@@ -5,6 +5,9 @@ Text for the NASA Space Apps project page, kept here so the page and the reposit
 ## Project name
 Cut Off
 
+## Team
+Ram (team lead and repository manager), Hiren (research and accuracy), Mayank (frontend and testing), Yash (DevOps), Rudra (charts and visuals). Roles and responsibilities are in the README.
+
 ## High-level summary
 Cut Off looks for candidate landslides after the magnitude 7.7 Panama earthquake of 9 October 2026 using changes in NISAR L-band radar images, joins them to the OpenStreetMap road network, and shows which roads are likely blocked and which communities are possibly cut off. It responds to the challenge "Dancing with the SARs". Optical satellites struggle under cloud and forest; radar can collect images through cloud and at night, so it can give first leads. What makes the project useful is that it also measures itself: the result is checked against hand-marked points and a pre-event baseline, and the weaknesses are shown next to the numbers.
 
