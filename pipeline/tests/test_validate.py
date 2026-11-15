@@ -1,4 +1,4 @@
-"""The validation protocol: sealed split, tuning on one half, one scoring of the other."""
+"""The validation protocol: random split, tuning on one half, scoring of the held-out half."""
 
 import json
 import subprocess
@@ -130,7 +130,7 @@ def test_tuning_picks_the_threshold_that_separates_landslides_from_decoys(scene)
     assert result["threshold_db"] == -3.0
 
 
-def test_the_sealed_test_half_is_scored_into_stats(scene):
+def test_the_held_out_half_is_scored_into_stats(scene):
     root, cfg = scene
     result = validate(root, cfg)
     stats = json.loads((root / "out" / "stats.json").read_text(encoding="utf-8"))
