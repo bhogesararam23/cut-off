@@ -22,7 +22,7 @@ export function popupContent(p: Picked): { title: string; lines: string[] } {
           fill(S.landslide.hv, { before: fmtDb(l.hv_before_db), after: fmtDb(l.hv_after_db), dhv: fmtDb(l.dhv_db) }),
           fill(S.landslide.slope, { slope: fmtNumber(l.slope_deg, 0) }),
           fill(S.landslide.seen, { pairs_seen: l.pairs_seen, pairs_visible: l.pairs_visible }),
-          fill(S.landslide.confidence, { confidence: C.landslides.confidenceLabels[l.confidence] }),
+          fill(S.landslide.confidence, { confidence: C.landslides.supportLabels[l.confidence] }),
         ],
       };
     }

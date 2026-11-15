@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 from main import create_app
 
 REPO = Path(__file__).resolve().parents[2]
-MOCK_DATA = REPO / "web" / "public" / "data"          # the committed mock files
+MOCK_DATA = REPO / "web" / "public" / "data"          # the committed result files
 EVENT = "panama-2026"
 ORIGIN = "https://cut-off.example.com"
 

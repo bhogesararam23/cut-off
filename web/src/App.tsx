@@ -1,10 +1,10 @@
 import { lazy, Suspense } from 'react';
-import { Answer } from './components/Answer.tsx';
 import { BottomSheet } from './components/BottomSheet.tsx';
 import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 import { Header } from './components/Header.tsx';
-import { MockBanner } from './components/MockBanner.tsx';
-import { MethodSection, SiteFooter, SureSection } from './components/Sections.tsx';
+import { OnThisPage } from './components/OnThisPage.tsx';
+import { Figure1, Overview, Terms } from './components/Overview.tsx';
+import { LimitsSection, MethodSection, SiteFooter, SureSection } from './components/Sections.tsx';
 import { TabbedPanel } from './components/SidePanel.tsx';
 import { AppStateProvider } from './lib/AppState.tsx';
 import { C } from './lib/content.ts';
@@ -24,7 +24,7 @@ function MapSlot() {
   );
 }
 
-/** Section C: guided rail on the left and the map on the right; on a phone the rail is a bottom sheet over the map. */
+/** The map: guided rail on the left and the map on the right; on a phone the rail is a bottom sheet over the map. */
 function Explorer() {
   const desktop = useMedia(DESKTOP_QUERY);
   return (
@@ -56,14 +56,19 @@ export default function App() {
   return (
     <DataProvider>
       <AppStateProvider>
-        <MockBanner />
         <Header />
-        <main>
-          <Answer />
-          <Explorer />
-          <SureSection />
-          <MethodSection />
-        </main>
+        <div className="xl:grid xl:grid-cols-[13rem_minmax(0,1fr)]">
+          <aside className="hidden border-r border-ink/10 xl:block"><OnThisPage /></aside>
+          <main className="min-w-0">
+            <Overview />
+            <Figure1 />
+            <Terms />
+            <Explorer />
+            <SureSection />
+            <MethodSection />
+            <LimitsSection />
+          </main>
+        </div>
         <SiteFooter />
       </AppStateProvider>
     </DataProvider>

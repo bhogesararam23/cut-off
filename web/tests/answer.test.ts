@@ -3,46 +3,33 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import test from 'node:test';
-import { answerTiles, baselineFails, confusion, MIN_N_TO_SCORE, peopleInCutOff, sizeRows } from '../src/lib/answer.ts';
+import { answerTiles, baselineFails, confusion, MIN_N_TO_SCORE, sizeRows } from '../src/lib/answer.ts';
 import { C } from '../src/lib/content.ts';
-import type { Communities, Stats } from '../src/lib/types.ts';
+import type { Stats } from '../src/lib/types.ts';
 
 const ROOT = new URL('..', import.meta.url);
 const read = (rel: string) => readFileSync(new URL(rel, ROOT), 'utf-8');
 const stats: Stats = JSON.parse(read('public/data/panama-2026/stats.json'));
-const communities: Communities = JSON.parse(read('public/data/panama-2026/communities.geojson'));
 
-test('the answer tiles show exactly the values in stats.json', () => {
-  const tiles = Object.fromEntries(answerTiles(stats, communities).map((t) => [t.key, t]));
+test('the key facts show exactly the values in stats.json', () => {
+  const tiles = Object.fromEntries(answerTiles(stats).map((t) => [t.key, t]));
   assert.equal(tiles.landslides.value, stats.landslides);
   assert.equal(tiles.roads.value, stats.roads_blocked_km);
   assert.equal(tiles.communities.value, stats.communities_cut_off);
   assert.equal(tiles.landslides.source, 'stats.json');
-  assert.equal(tiles.people.source, 'communities.geojson');
 });
 
 test('missing values stay missing: never a guess', () => {
-  const tiles = answerTiles({ ...stats, roads_blocked_km: null, communities_cut_off: null }, undefined);
+  const tiles = answerTiles({ ...stats, roads_blocked_km: null, communities_cut_off: null });
   assert.equal(tiles.find((t) => t.key === 'roads')?.value, null);
   assert.equal(tiles.find((t) => t.key === 'communities')?.value, null);
-  assert.equal(tiles.find((t) => t.key === 'people')?.value, null);
-});
-
-test('people are counted only where a population is known', () => {
-  const c = (status: 'cut_off' | 'reachable', population: number | null) => ({
-    type: 'Feature' as const, geometry: { type: 'Point' as const, coordinates: [0, 0] as [number, number] },
-    properties: { osm_id: null, name: 'x', place: 'village', population, status, nearest_hub: null, reason: '' },
-  });
-  const fc: Communities = { type: 'FeatureCollection', features: [c('cut_off', 120), c('cut_off', null), c('reachable', 9000)] };
-  assert.deepEqual(peopleInCutOff(fc), { people: 120, known: 1, total: 2 });
-  assert.equal(peopleInCutOff({ type: 'FeatureCollection', features: [c('cut_off', null)] }).people, null);
 });
 
 test('size groups with too few points get no score', () => {
   const rows = sizeRows([{ size: 'small', n: 30, detection_rate: 0.13 }, { size: 'large', n: 2, detection_rate: 1 }]);
   assert.deepEqual(rows.map((r) => [r.size, r.n, r.scored]), [['small', 30, true], ['medium', 0, false], ['large', 2, false]]);
   assert.equal(MIN_N_TO_SCORE, 5);
-  assert.match(C.sure.tooFew, /too few to score/);
+  assert.match(C.sure.chart1TooFew, /too few to score/);
 });
 
 test('counts behind the rates add up to the number of test points', () => {
@@ -54,7 +41,7 @@ test('counts behind the rates add up to the number of test points', () => {
   assert.ok(Math.abs(cm.found / v.n_test_landslide - v.detection_rate) < 0.01);
 });
 
-test('a failing no-quake check is detected', () => {
+test('a failing pre-event baseline is detected', () => {
   assert.equal(baselineFails({ ...stats, baseline_no_change_flag_rate: 0.03, post_event_flag_rate: 0.02 }), true);
   assert.equal(baselineFails({ ...stats, baseline_no_change_flag_rate: 0.001, post_event_flag_rate: 0.02 }), false);
 });
@@ -65,15 +52,17 @@ test('the footer carries the disclaimer, credits, licence and AI line', () => {
   for (const must of ['NISAR', 'Alaska Satellite Facility', 'Copernicus DEM GLO-30', 'Contains modified Copernicus Sentinel data 2026', 'OpenStreetMap contributors (ODbL)', 'NASA GIBS', 'EMSR934']) {
     assert.ok(credits.includes(must), must);
   }
-  assert.match(C.footer.licence, /Apache 2\.0/);
+  assert.match(C.footer.licence, /project code is licensed under Apache 2\.0/);
   assert.match(C.footer.ai, /AI tools assisted/);
   assert.match(read('src/components/Sections.tsx'), /C\.footer\.disclaimer/);
+  assert.match(C.footer.licence, /Datasets and third-party material keep their own terms/);
 });
 
 test('wording: the product name has no agency name and claims are qualified', () => {
   assert.equal(C.topBar.title, 'Cut Off');
-  assert.match(C.answer.headline, /candidate landslides/);
-  assert.match(C.answer.headline, /possibly cut off/);
+  assert.match(C.page.title, /Candidate landslides/);
+  assert.match(C.page.title, /possibly cut off/);
+  assert.match(C.page.title, /likely blocked/);
 });
 
 function walk(dir: string): string[] {
@@ -92,4 +81,24 @@ test('no forbidden strings, logos or trackers in the site sources and data', () 
     for (const bad of forbidden) assert.ok(!text.includes(bad), `${bad} found in ${f}`);
   }
   assert.ok(files.length > 20);
+});
+
+test('audit wording: no overclaims anywhere in the visible text', () => {
+  const all = JSON.stringify(C);
+  for (const bad of [/sealed/i, /through both/i, /through leaves/i, /nothing happened/i, /every claim is cited/i, /everything is open source/i, /Open source under/i,
+    /independent test/i, /found \d[\d,]* landslides/i, /real-time/i, /confirmed landslides? (were|are) found/i]) {
+    assert.doesNotMatch(all, bad);
+  }
+  assert.match(C.page.splitNote, /not independent geographic validation and not field validation/);
+  assert.match(C.sure.splitNote, /random split of points within one study area/);
+  assert.match(C.method.radarNote, /a change is a lead, not a confirmed landslide/);
+  assert.match(C.landslides.supportHelp, /not the probability that a landslide happened/);
+  assert.deepEqual(Object.values(C.landslides.supportLabels), ['Seen in many passes', 'Seen in 2 passes', 'Seen in 1 pass']);
+  assert.match(C.sure.baselineText, /20 Sep to 2 Oct 2026/);
+  assert.match(C.sure.p2, /scored twice/);
+});
+
+test('the two source links the audit asked for are on the page', () => {
+  assert.match(C.page.quakeUrl, /us6000u18k/);
+  assert.match(read('src/components/Overview.tsx'), /EMSR934|referenceLabel/);
 });

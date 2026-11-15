@@ -128,10 +128,10 @@ export function SwipeCompare({ onAfterMap }: { onAfterMap?: (map: MapLibreMap | 
 
       {pair && (
         <>
-          <p className="pointer-events-none absolute left-2 top-2 z-10 rounded bg-slate-900/75 px-2 py-0.5 text-xs font-medium text-white">
+          <p className="pointer-events-none absolute left-2 top-2 z-10 max-w-[38%] rounded bg-slate-900/75 px-2 py-0.5 text-xs font-medium leading-tight text-white">
             {beforeLabel}
           </p>
-          <p className="pointer-events-none absolute right-12 top-2 z-10 max-w-[55%] rounded bg-slate-900/75 px-2 py-0.5 text-right text-xs font-medium text-white">
+          <p className="pointer-events-none absolute right-12 top-2 z-10 max-w-[38%] rounded bg-slate-900/75 px-2 py-0.5 text-right text-xs font-medium leading-tight text-white">
             {afterLabel}
           </p>
         </>

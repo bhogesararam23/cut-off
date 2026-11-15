@@ -1,4 +1,5 @@
-"""Write synthetic output files so the API and the web app can be built before real results exist.
+"""TEST-ONLY. Write synthetic output files so the format checker and the tests have something to read.
+Nothing here is used for the published results, and the website and API do not use it.
 
 Everything here is made up. Every file that can carry the flag has "mock": true, names are labelled
 "Mock ...", and the images are random texture. The output is deterministic (fixed seed).

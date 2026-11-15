@@ -16,16 +16,16 @@ export function DetectionBySize({ bySize }: { bySize: SizeDetection[] }) {
   const summary = present
     .map((b) =>
       b.n >= MIN_N_TO_SCORE
-        ? fill(C.evidence.chart1Scored, { size: b.size, rate: fmtPercent(b.detection_rate), n: b.n })
-        : fill(C.evidence.chart1TooFew, { size: b.size, n: b.n }),
+        ? fill(C.sure.chart1Scored, { size: b.size, rate: fmtPercent(b.detection_rate), n: b.n })
+        : fill(C.sure.chart1TooFew, { size: b.size, n: b.n }),
     )
     .join('. ') + '.';
 
   return (
     <figure className="space-y-1">
-      <figcaption className="font-semibold">{C.evidence.chart1Title}</figcaption>
+      <figcaption className="font-semibold">{C.sure.chart1Title}</figcaption>
       {present.length === 0 ? (
-        <p className="text-sm text-slate-600">{C.evidence.chartEmpty}</p>
+        <p className="text-sm text-slate-600">{C.sure.chartEmpty}</p>
       ) : (
         <>
           <div role="img" aria-label={summary} className="h-52 w-full">

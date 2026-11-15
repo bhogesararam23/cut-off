@@ -1,7 +1,5 @@
 // Turning values from the data files into text. No result is ever typed by hand: these only format.
 
-import type { TimeseriesPoint } from './types.ts';
-
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTHS_LONG = [
   'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December',
@@ -10,7 +8,6 @@ const PERCENT = 100; // unit conversion: the data files store rates as fractions
 const MS_PER_HOUR = 3_600_000;
 const MS_PER_DAY = 86_400_000;
 const HECTARE_M2 = 10_000;
-const FLAT_SHARE = 0.25; // forest counts as flat if it moved less than a quarter as much as the landslides
 
 const nf = (digits: number) => new Intl.NumberFormat('en', { maximumFractionDigits: digits, minimumFractionDigits: digits });
 
@@ -57,28 +54,4 @@ export function hoursBetween(fromIso: string, toIso: string): number {
 }
 export function daysBetween(fromIso: string, toIso: string): number {
   return Math.round((new Date(toIso).getTime() - new Date(fromIso).getTime()) / MS_PER_DAY);
-}
-
-type HvKey = 'hv_landslide_db' | 'hv_forest_db';
-
-/** Mean HV before the quake minus mean HV after it, in dB (positive = the signal fell), or null if either side is empty. */
-export function hvDrop(series: TimeseriesPoint[], quakeIso: string, key: HvKey): number | null {
-  const q = new Date(quakeIso).getTime();
-  const before = series.filter((s) => new Date(s.date).getTime() < q).map((s) => s[key]);
-  const after = series.filter((s) => new Date(s.date).getTime() > q).map((s) => s[key]);
-  if (!before.length || !after.length) return null;
-  const mean = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length;
-  return mean(before) - mean(after);
-}
-
-/** Average drop in landslide HV after the quake compared with before (positive number of dB), or null. */
-export function landslideDrop(series: TimeseriesPoint[], quakeIso: string): number | null {
-  return hvDrop(series, quakeIso, 'hv_landslide_db');
-}
-
-/** True when intact forest moved much less than the landslides did, so "forest stays flat" is a fair description. */
-export function forestStaysFlat(series: TimeseriesPoint[], quakeIso: string): boolean {
-  const land = hvDrop(series, quakeIso, 'hv_landslide_db');
-  const forest = hvDrop(series, quakeIso, 'hv_forest_db');
-  return land !== null && forest !== null && Math.abs(forest) < FLAT_SHARE * Math.abs(land);
 }

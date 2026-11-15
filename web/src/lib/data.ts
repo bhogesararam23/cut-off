@@ -2,7 +2,7 @@
 // and the static files are the fallback, so a sleeping or broken API never breaks the app.
 
 import type {
-  Communities, EventInfo, Landslides, Pair, Roads, Stats, TimelineItem, TimeseriesPoint, UnknownAreas,
+  Communities, EventInfo, Landslides, Pair, Roads, Stats, TimelineItem, UnknownAreas,
 } from './types.ts';
 
 const API = import.meta.env.VITE_API_URL;
@@ -43,7 +43,6 @@ export const FILES = {
   unknown: spec<UnknownAreas>('unknown.geojson', `/api/events/${EVENT_ID}/unknown`),
   roads: spec<Roads>('roads.geojson', `/api/events/${EVENT_ID}/roads`),
   communities: spec<Communities>('communities.geojson', `/api/events/${EVENT_ID}/communities`),
-  timeseries: spec<TimeseriesPoint[]>('timeseries.json', `/api/events/${EVENT_ID}/timeseries`),
   timeline: spec<TimelineItem[]>('timeline.json', `/api/events/${EVENT_ID}/timeline`),
 } as const;
 

@@ -11,8 +11,6 @@ data/raw/
 data/work/
 *.tif
 
-# hosting packages built by scripts/package_api.py
-build/
 api/data/
 
 # local configuration and credentials

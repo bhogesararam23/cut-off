@@ -17,6 +17,8 @@ html {
 body {
   background: var(--color-paper);
   color: var(--color-ink);
+  font-size: 1.0625rem;
+  line-height: 1.6;
 }
 .num {
   font-family: var(--font-mono);

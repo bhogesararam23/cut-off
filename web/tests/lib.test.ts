@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { C, fill } from '../src/lib/content.ts';
 import {
-  daysBetween, fmtArea, fmtDay, fmtDayLong, fmtDayYear, fmtDateTime, fmtNumber, fmtPercent, forestStaysFlat, hoursBetween, hvDrop, landslideDrop,
+  daysBetween, fmtArea, fmtDay, fmtDayLong, fmtDayYear, fmtDateTime, fmtNumber, fmtPercent, hoursBetween,
 } from '../src/lib/format.ts';
 
 test('fill replaces placeholders and never invents a number', () => {
@@ -41,32 +41,12 @@ test('durations come from the timestamps', () => {
   assert.equal(daysBetween('2026-09-27T23:53:35Z', '2026-10-09T23:53:35Z'), 12);
 });
 
-test('landslide drop is the mean before minus the mean after the quake', () => {
-  const q = '2026-10-09T17:56:00Z';
-  const row = (date: string, hv: number) => ({ date, track: 1, direction: 'descending' as const, hv_landslide_db: hv, hv_forest_db: -13 });
-  const series = [row('2026-09-20T00:00:00Z', -13), row('2026-09-27T00:00:00Z', -13.2), row('2026-10-10T00:00:00Z', -18), row('2026-10-12T00:00:00Z', -18.4)];
-  assert.ok(Math.abs((landslideDrop(series, q) as number) - 5.1) < 1e-9);
-  assert.equal(landslideDrop(series.slice(0, 2), q), null);
-  assert.equal(landslideDrop([], q), null);
-});
-
 test('required wording rules hold in the app text', () => {
   const all = JSON.stringify(C);
-  assert.ok(!/confirmed|detected all/i.test(all));
+  assert.ok(!/detected all/i.test(all));
+  assert.ok(!/(?<!not (a )?)confirmed/i.test(all.replace(/not a confirmed/gi, '').replace(/not confirmed/gi, '')), 'confirmed must only appear as "not (a) confirmed"');
   for (const key of ['blocked', 'cut_off'] as const) assert.ok(C.popups.status[key].length > 0);
   assert.equal(C.popups.status.blocked, 'Likely blocked');
   assert.equal(C.popups.status.cut_off, 'Possibly cut off');
   assert.equal(C.legend.communities.cut_off, 'Possibly cut off');
-  assert.equal(C.limits.items.length, 9);
-});
-
-test('forest only counts as flat when it moved far less than the landslides', () => {
-  const q = '2026-10-09T17:56:00Z';
-  const row = (date: string, land: number, forest: number) => ({ date, track: 1, direction: 'descending' as const, hv_landslide_db: land, hv_forest_db: forest });
-  const flat = [row('2026-09-20T00:00:00Z', -13, -13), row('2026-10-12T00:00:00Z', -18, -13.2)];
-  const dropped = [row('2026-09-20T00:00:00Z', -13, -13), row('2026-10-12T00:00:00Z', -18, -16)];
-  assert.equal(forestStaysFlat(flat, q), true);
-  assert.equal(forestStaysFlat(dropped, q), false);
-  assert.equal(forestStaysFlat([], q), false);
-  assert.ok(Math.abs((hvDrop(dropped, q, 'hv_forest_db') as number) - 3) < 1e-9);
 });

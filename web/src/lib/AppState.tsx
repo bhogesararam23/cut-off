@@ -48,8 +48,6 @@ interface AppState {
   flyNonce: number;
   /** changes when the map should show the whole area again */
   fitNonce: number;
-  aboutOpen: boolean;
-  setAboutOpen: (open: boolean) => void;
   sheetOpen: boolean;
   setSheetOpen: (open: boolean) => void;
 }
@@ -65,7 +63,6 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [selected, select] = useState<Picked | null>(null);
   const [flyNonce, setFlyNonce] = useState(0);
   const [fitNonce, setFitNonce] = useState(0);
-  const [aboutOpen, setAboutOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const toggleLayer = useCallback((k: LayerKey) => setLayers((l) => ({ ...l, [k]: !l[k] })), []);
@@ -84,9 +81,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       pairId, setPairId, tab, setTab, layers, toggleLayer, compareMode, setCompareMode, radarOpacity, setRadarOpacity,
-      selected, select, focusFeature, flyNonce, fitNonce, aboutOpen, setAboutOpen, sheetOpen, setSheetOpen,
+      selected, select, focusFeature, flyNonce, fitNonce, sheetOpen, setSheetOpen,
     }),
-    [pairId, tab, setTab, layers, toggleLayer, compareMode, radarOpacity, selected, focusFeature, flyNonce, fitNonce, aboutOpen, sheetOpen],
+    [pairId, tab, setTab, layers, toggleLayer, compareMode, radarOpacity, selected, focusFeature, flyNonce, fitNonce, sheetOpen],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

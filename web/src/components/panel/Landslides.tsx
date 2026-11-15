@@ -14,7 +14,8 @@ const selectClass =
   'rounded border border-slate-300 bg-white px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500';
 
 export function Landslides() {
-  const { landslides } = useData();
+  const { landslides, stats: statsState } = useData();
+  const stats = ready(statsState);
   const { focusFeature, selected } = useApp();
   const [filter, setFilter] = useState<ConfidenceFilter>('all');
   const [sort, setSort] = useState<SortKey>('size');
@@ -48,7 +49,7 @@ export function Landslides() {
               </select>
             </label>
           </div>
-          <p className="text-xs text-slate-600">{C.landslides.confidenceHelp}</p>
+          <p className="text-xs text-slate-600">{fill(C.landslides.supportHelp, { auc: fmtNumber(stats?.validation?.auc, 2) })}</p>
 
           {rows.length === 0 ? (
             <p className="text-[15px] text-slate-700">{C.landslides.empty}</p>
@@ -68,7 +69,7 @@ export function Landslides() {
                       <span>
                         {fill(C.landslides.row, { id: p.id, area: fmtArea(p.area_m2), pairs_seen: p.pairs_seen, pairs_visible: p.pairs_visible })}
                       </span>
-                      <span className="shrink-0 rounded border border-slate-300 px-1.5 text-xs">{C.landslides.confidenceLabels[p.confidence]}</span>
+                      <span className="shrink-0 rounded border border-slate-300 px-1.5 text-xs">{C.landslides.supportLabels[p.confidence]}</span>
                     </button>
                   </li>
                 );

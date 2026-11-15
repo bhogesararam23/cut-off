@@ -3,6 +3,7 @@ import { C, fill } from '../../lib/content.ts';
 import { STATIC_BASE } from '../../lib/data.ts';
 import { ready, useData } from '../../lib/DataContext.tsx';
 import { fmtDateTime, fmtNumber, fmtPercent } from '../../lib/format.ts';
+import { baselineFails } from '../../lib/answer.ts';
 import { roadKmByStatus } from '../../lib/lists.ts';
 import { FileError } from '../FileError.tsx';
 import { Skeleton } from '../Skeleton.tsx';
@@ -60,7 +61,7 @@ export function RoadsStep() {
         ))}
       </ul>
       <p className="text-xs text-ink/75">{C.explorer.odbl}</p>
-      <button type="button" onClick={() => window.print()} className="rounded-card border border-ink px-3 py-1.5 text-sm font-medium hover:bg-ink/5">Print briefing</button>
+      <button type="button" onClick={() => window.print()} className="rounded-card border border-ink px-3 py-1.5 text-sm font-medium hover:bg-ink/5">{C.explorer.print}</button>
     </section>
   );
 }
@@ -74,16 +75,17 @@ export function SureStep() {
     <section aria-labelledby="surestep-h" className="space-y-3">
       <h2 id="surestep-h" className="text-lg font-semibold">{C.tabs.sure}</h2>
       {stats.status === 'error' && <FileError file={stats.file} />}
-      {s && !v && <p className="text-sm">{C.evidence.noValidation}</p>}
+      {s && !v && <p className="text-sm">{C.sure.noValidation}</p>}
       {v && (
         <p className="text-sm">
           {fill(C.explorer.sureShort, {
-            detection: fmtPercent(v.detection_rate, 1), n_land: v.n_test_landslide, false_alarm: fmtPercent(v.false_alarm_rate, 1),
+            detection: fmtPercent(v.detection_rate, 0), n_land: v.n_test_landslide, false_alarm: fmtPercent(v.false_alarm_rate, 0),
             n_forest: v.n_test_forest, auc: fmtNumber(v.auc, 2),
           })}
         </p>
       )}
-      {s && s.baseline_no_change_flag_rate >= s.post_event_flag_rate && <p className="rounded-card border border-brand bg-white p-2 text-sm">{C.evidence.baselineWarning}</p>}
+      {v && <p className="text-xs text-ink/80">{C.sure.splitNote}</p>}
+      {s && baselineFails(s) && <p className="rounded-card border border-brand bg-white p-2 text-sm">{C.sure.baselineFails}</p>}
       <p><a href="#sure" className="text-sm font-semibold underline decoration-brand decoration-2 underline-offset-2">{C.explorer.sureLink}</a></p>
     </section>
   );

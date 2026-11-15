@@ -98,6 +98,7 @@ export function Access() {
 
       <h3 className="pt-2 text-sm font-semibold">{C.access.realityHeading}</h3>
       <p className="text-sm">{C.access.realityText}</p>
+      <p className="text-xs"><a className="underline decoration-brand decoration-2 underline-offset-2" href={C.access.realitySourceUrl} target="_blank" rel="noopener noreferrer">{C.access.realitySourceLabel}</a></p>
     </section>
   );
 }

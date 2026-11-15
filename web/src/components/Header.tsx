@@ -17,6 +17,7 @@ export function Header() {
       <a href="#top" className="shrink-0 text-lg font-semibold tracking-tight">{C.topBar.title}</a>
       <p className="num min-w-0 flex-1 truncate text-[11px] text-white/80 sm:text-xs" title={label ?? undefined}>{label ?? '…'}</p>
       <nav aria-label="Sections" className="hidden shrink-0 items-center gap-1 md:flex">
+        <a className={link} href="#top">{C.header.nav.overview}</a>
         <a className={link} href="#map">{C.header.nav.map}</a>
         <a className={link} href="#sure">{C.header.nav.sure}</a>
         <a className={link} href="#method">{C.header.nav.method}</a>
