@@ -21,7 +21,8 @@ export function Overview() {
   const { stats, event, pairs } = useData();
   const s = ready(stats);
   const e = ready(event);
-  const first = ready(pairs)?.[0];
+  // the story is about the earliest radar pass after the quake, whichever pair is listed first
+  const first = [...(ready(pairs) ?? [])].sort((a, b) => a.after.localeCompare(b.after))[0];
 
   const story =
     e && first

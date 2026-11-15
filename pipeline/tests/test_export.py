@@ -122,9 +122,10 @@ def test_to_lonlat_matches_pyproj():
     assert p.bounds[0] == pytest.approx(-80.87, abs=1e-5)
 
 
-def test_default_timeline_uses_primary_pair():
-    cfg = {"time_utc": "2026-10-09T17:56:00Z", "primary_pair": "t141d", "timeline": [],
-           "pairs": [{"id": "t141d", "track": 141, "after": "2026-10-09T23:53:35Z"}]}
+def test_default_timeline_uses_the_earliest_post_quake_pass():
+    cfg = {"time_utc": "2026-10-09T17:56:00Z", "primary_pair": "t40d", "timeline": [],
+           "pairs": [{"id": "t40d", "track": 40, "after": "2026-10-14T23:45:16Z"},
+                     {"id": "t141d", "track": 141, "after": "2026-10-09T23:53:35Z"}]}
     t = default_timeline(cfg)
     assert t[0]["time_utc"] == cfg["time_utc"] and "track 141" in t[1]["label"] and t[1]["time_utc"] == "2026-10-09T23:53:35Z"
     cfg["timeline"] = [{"time_utc": "x", "label": "y", "source": "z"}]

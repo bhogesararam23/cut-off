@@ -32,6 +32,7 @@ Append-only. No AI-generated images or video are used.
 | 2026-11-14 | AI coding assistant | README (with a results block written from stats.json by a script), public security policy, fact-check of quotes and claims against their sources, citations | `README.md`, `SECURITY.md`, `pipeline/cutoff/report.py`, `docs/citations.md` | Script tests; quotes and facts read in the original sources (see citations) |
 | 2026-11-14 | AI coding assistant | Final-phase checks: scans for unqualified wording, logos, personal data and mock flags; dependency audits; walk-through of the production build; fixed an unqualified word in the page title | `web/index.html`, `web/src/lib/content.ts` | Browser walk-through at laptop and phone widths; npm audit and pip-audit clean |
 | 2026-11-14 | AI coding assistant | Command that cuts roads and places for the study area out of an OpenStreetMap extract; news-reported places are now also matched when OpenStreetMap uses a longer name (for example "La Loma de Quebro") | `pipeline/cutoff/osm.py`, `access.py`, tests | Unit tests; run on the real extract (10,326 road lines, 460 places) and read back with the pipeline's own readers |
+| 2026-11-15 | AI coding assistant | Wording fix for runs with several pairs: the overview story and the timeline now use the earliest post-quake pass, not the first pair listed | `pipeline/cutoff/export.py`, `web/src/components/panel/Overview.tsx`, tests | Unit tests; type check and build |
 
 Summary for the submission form (update at the end):
 - Tools: AI chat assistant, AI coding assistant.

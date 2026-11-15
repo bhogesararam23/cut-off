@@ -60,10 +60,10 @@ def pair_entry(pair: dict, bbox: list[float], flagged_pixels: int) -> dict:
 
 
 def default_timeline(cfg: dict) -> list[dict]:
-    """Timeline from the config, or the standard entries built from the primary pair."""
+    """Timeline from the config, or the standard entries built from the earliest post-quake pass."""
     if cfg.get("timeline"):
         return cfg["timeline"]
-    primary = next(p for p in cfg["pairs"] if p["id"] == cfg["primary_pair"])
+    primary = min(cfg["pairs"], key=lambda p: p["after"])        # the earliest pass after the quake, whichever pair it belongs to
     return [
         {"time_utc": cfg["time_utc"], "label": "M7.7 earthquake", "source": "USGS"},
         {"time_utc": primary["after"], "label": f"First NISAR pass after the quake (track {primary['track']})", "source": "ASF"},
