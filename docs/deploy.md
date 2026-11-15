@@ -5,7 +5,7 @@ Two pieces, hosted separately and deployed by GitHub Actions (`.github/workflows
 | Piece | Where | How |
 |---|---|---|
 | API (`api/`) | Azure App Service for Containers (Linux) | A Docker image built from `api/Dockerfile`, pushed to Azure Container Registry, tagged with the commit hash |
-| Website (`web/`) | Cloudflare Pages | `npm run build`, then `wrangler pages deploy web/dist` |
+| Website (`web/`) | Cloudflare | Either built by Cloudflare from this repository, or by the Website job here (`npm run build`, then `wrangler pages deploy web/dist`) when `CF_PAGES_PROJECT` is set |
 
 The website works on its own from the data files it ships with. The API is optional: if it is down or asleep the site falls back to its own copy.
 
@@ -33,7 +33,7 @@ Variables (not secret):
 - `AZURE_RESOURCE_GROUP`
 - `AZURE_WEBAPP_NAME`
 - `ACR_NAME` (registry name, without `.azurecr.io`)
-- `CF_PAGES_PROJECT`
+- `CF_PAGES_PROJECT` (optional: when it is not set the Website job is skipped, for example because Cloudflare builds the site from Git itself)
 - `SITE_ORIGIN` (the website's origin, for example `https://<project>.pages.dev`; no path, no trailing slash). It becomes the API's allowed CORS origin and is used for the site check.
 - `API_URL` (the API's `https://<app>.azurewebsites.net` address; the site build adds it to its content security policy. Leave it unset to build a site that only uses its own files.)
 
@@ -51,8 +51,13 @@ curl -I https://<your-site>.pages.dev/
 ```
 The first should answer `{"status":"ok","version":"0.1.0"}`. If the API fails, `az webapp log tail --name <app-name> --resource-group <resource-group>` shows the server log.
 
+## Live addresses
+- Website: https://cut-off.bhogesara-ram23.workers.dev
+- API: https://cutoff-api-26-ram26.azurewebsites.net (`/api/health`, interactive docs at `/docs`). Its allowed CORS origin is the website's address above.
+- For the website to read its data through the API, set `VITE_API_URL=https://cutoff-api-26-ram26.azurewebsites.net` as a build variable where the site is built. Without it the website uses the files it ships with, which are the same files.
+
 ## Before submitting
-- Replace the `{url}` placeholders at the top of `README.md` with the live site and the video.
+- Check that the live website shows the same numbers as `stats.json` in this repository (the key facts at the top of the page).
 - Add the sources actually used to `docs/citations.md` and finish `docs/si-log.md`.
 - Keep every link live and unchanged through judging: do not force-push or delete anything after submitting.
 

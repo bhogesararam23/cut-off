@@ -95,9 +95,11 @@ jobs:
   web:
     name: Website to Cloudflare Pages
     # Independent of the API job: a failed API deploy does not stop the website.
+    # Skipped when CF_PAGES_PROJECT is not set (for example when Cloudflare builds the site from Git itself).
     if: >-
+      vars.CF_PAGES_PROJECT != '' && (
       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'))
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
