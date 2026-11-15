@@ -1,9 +1,10 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useRef } from 'react';
 import { baselineFails } from '../lib/answer.ts';
 import { C, fill } from '../lib/content.ts';
 import { ready, useData } from '../lib/DataContext.tsx';
 import { fmtNumber, fmtPercent } from '../lib/format.ts';
 import type { ValidationStats } from '../lib/types.ts';
+import { useNearViewport } from '../lib/useNearViewport.ts';
 import { FileError } from './FileError.tsx';
 import { REPO } from './Header.tsx';
 import { Skeleton } from './Skeleton.tsx';
@@ -51,6 +52,23 @@ function ScoreTable({ v, original }: { v: ValidationStats; original: ValidationS
   );
 }
 
+/** The chart (and the charting library) is fetched only when it is about to be seen; the box keeps its height meanwhile. */
+function SizeFigure({ v }: { v: ValidationStats }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const near = useNearViewport(ref, '400px');
+  return (
+    <div ref={ref} className="mt-2 min-h-[18rem] rounded-card border border-ink/15 bg-white p-3">
+      {near ? (
+        <Suspense fallback={<Skeleton className="h-56" />}>
+          <DetectionBySize bySize={v.by_size} />
+        </Suspense>
+      ) : (
+        <Skeleton className="h-56" />
+      )}
+    </div>
+  );
+}
+
 /** The accuracy section: both scorings, the pre-event baseline and the detection-by-size figure. */
 export function SureSection() {
   const { stats } = useData();
@@ -84,11 +102,7 @@ export function SureSection() {
 
           <figure>
             <h3 className="text-lg font-semibold">{C.sure.figure2}</h3>
-            <div className="mt-2 rounded-card border border-ink/15 bg-white p-3">
-              <Suspense fallback={<Skeleton className="h-56" />}>
-                <DetectionBySize bySize={v.by_size} />
-              </Suspense>
-            </div>
+            <SizeFigure v={v} />
             <figcaption className="mt-2 space-y-1 text-[15px]">
               <p>{C.sure.figure2Seeing}</p>
               <p className="text-xs text-ink/70">{C.sure.figure2Credit}</p>

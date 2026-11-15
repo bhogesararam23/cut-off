@@ -31,35 +31,35 @@ export function Overview() {
 
         <h2 className="mt-8 text-xl font-semibold">{C.page.factsHeading}</h2>
         {stats.status === 'error' && <div className="mt-3"><FileError file={stats.file} /></div>}
-        <dl className="mt-3 grid grid-cols-2 gap-3">
+        <ul className="mt-3 grid grid-cols-2 gap-3">
           {s ? (
             <>
               {answerTiles(s).map((t) => (
-                <div key={t.key} className="rounded-card border border-ink/15 bg-paper p-4">
-                  <dd className="num text-3xl font-medium">
+                <li key={t.key} className="rounded-card border border-ink/15 bg-paper p-4">
+                  <p className="num text-3xl font-medium">
                     {t.value === null ? <span className="text-base">{C.page.notAvailable}</span> : fmtNumber(t.value, t.digits)}
                     {t.value !== null && t.unit && <span className="ml-1 text-base">{t.unit}</span>}
-                  </dd>
-                  <dt className="mt-1 text-sm font-semibold">{C.page.facts[t.key].label}</dt>
-                  <p className="mt-1 text-xs text-ink/75">{C.page.facts[t.key].meaning}</p>
-                  <p className="num mt-2 text-[10px] uppercase tracking-wide text-ink/60">{fill(C.page.source, { file: t.source })}</p>
-                </div>
+                  </p>
+                  <p className="mt-1 text-sm font-semibold">{C.page.facts[t.key].label}</p>
+                  <p className="mt-1 text-xs text-ink/80">{C.page.facts[t.key].meaning}</p>
+                  <p className="num mt-2 text-[11px] uppercase tracking-wide text-ink/80">{fill(C.page.source, { file: t.source })}</p>
+                </li>
               ))}
-              <div className="rounded-card border border-ink/15 bg-paper p-4">
-                <dd className="num text-3xl font-medium">
+              <li className="rounded-card border border-ink/15 bg-paper p-4">
+                <p className="num text-3xl font-medium">
                   {v ? <>{fmtPercent(v.detection_rate, 0)}<span className="ml-1 text-base">%</span></> : <span className="text-base">{C.page.notAvailable}</span>}
-                </dd>
-                <dt className="mt-1 text-sm font-semibold">{C.page.facts.detection.label}</dt>
-                <p className="mt-1 text-xs text-ink/75">
+                </p>
+                <p className="mt-1 text-sm font-semibold">{C.page.facts.detection.label}</p>
+                <p className="mt-1 text-xs text-ink/80">
                   {v ? fill(C.page.facts.detection.meaning, { n: v.n_test_landslide, false_alarm: fmtPercent(v.false_alarm_rate, 0), n_forest: v.n_test_forest }) : ''}
                 </p>
-                <p className="num mt-2 text-[10px] uppercase tracking-wide text-ink/60">{fill(C.page.source, { file: 'stats.json' })}</p>
-              </div>
+                <p className="num mt-2 text-[11px] uppercase tracking-wide text-ink/80">{fill(C.page.source, { file: 'stats.json' })}</p>
+              </li>
             </>
           ) : (
             [0, 1, 2, 3].map((i) => <Skeleton key={i} className="h-36" />)
           )}
-        </dl>
+        </ul>
 
         {s && v && (
           <div role="note" className="mt-4 space-y-2 rounded-card border border-brand bg-paper p-3 text-[15px]">
