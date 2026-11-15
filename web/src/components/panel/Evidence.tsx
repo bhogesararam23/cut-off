@@ -47,6 +47,7 @@ export function Evidence() {
                 baseline: fmtPercent(s.baseline_no_change_flag_rate, 1), post: fmtPercent(s.post_event_flag_rate, 1),
               })}
             </p>
+            {s.baseline_no_change_flag_rate >= s.post_event_flag_rate && <p className="mt-1 font-medium">{C.evidence.baselineWarning}</p>}
           </div>
 
           <p className="text-sm text-slate-700">{C.evidence.context}</p>

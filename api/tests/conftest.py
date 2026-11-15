@@ -33,7 +33,8 @@ def read_file(mock_dir: Path, name: str):
 def tree(tmp_path, mock_dir):
     """A private copy of the mock data (data/panama-2026) with secrets planted outside the event folder."""
     base = tmp_path / "data"
-    shutil.copytree(mock_dir / EVENT, base / EVENT)
+    # the large before/after radar images are not needed by these tests: leave them out to keep the copy fast
+    shutil.copytree(mock_dir / EVENT, base / EVENT, ignore=shutil.ignore_patterns("hv_t*.png"))
     (base / "root-secret.json").write_text('{"leak": "TOP-SECRET-ROOT"}', encoding="utf-8")
     (tmp_path / "secret.json").write_text('{"leak": "TOP-SECRET-PARENT"}', encoding="utf-8")
     (tmp_path / "passwd").write_text("TOP-SECRET-PASSWD", encoding="utf-8")

@@ -75,3 +75,11 @@ def test_cli_report(tmp_path, capsys):
     (out / "stats.json").write_text(json.dumps(dict(REAL, mock=True)), encoding="utf-8")
     assert main(["report", "--config", str(cfg / "config.json"), "--out", str(out), "--readme", str(p)]) == 1
     assert "cannot write the results" in capsys.readouterr().err
+
+
+def test_tiny_groups_get_a_count_not_a_rate_and_a_bad_baseline_is_said():
+    stats = dict(REAL, baseline_no_change_flag_rate=0.01, post_event_flag_rate=0.005)
+    stats["validation"] = dict(REAL["validation"], by_size=[{"size": "medium", "n": 20, "detection_rate": 0.5}, {"size": "large", "n": 1, "detection_rate": 1.0}])
+    text = results_block(stats)
+    assert "large: n = 1, too few to score" in text and "large 100%" not in text and "medium 50% (n = 20)" in text
+    assert "Caution" in text and "Caution" not in results_block(REAL)

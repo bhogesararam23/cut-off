@@ -57,7 +57,7 @@ test('required wording rules hold in the app text', () => {
   assert.equal(C.popups.status.blocked, 'Likely blocked');
   assert.equal(C.popups.status.cut_off, 'Possibly cut off');
   assert.equal(C.legend.communities.cut_off, 'Possibly cut off');
-  assert.equal(C.limits.items.length, 8);
+  assert.equal(C.limits.items.length, 9);
 });
 
 test('forest only counts as flat when it moved far less than the landslides', () => {

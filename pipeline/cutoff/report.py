@@ -11,6 +11,7 @@ from pathlib import Path
 START = "<!-- results:start -->"
 END = "<!-- results:end -->"
 PERCENT = 100  # the data files store rates as fractions
+MIN_N_TO_SCORE = 5  # with fewer test points than this, a rate would be meaningless
 
 
 class ReportError(Exception):
@@ -33,8 +34,9 @@ def results_block(stats: dict) -> str:
         lines.append("- Roads likely blocked and communities possibly cut off: not computed yet.")
     v = stats.get("validation")
     if v:
-        by_size = ", ".join(f"{b['size']} {_pct(b['detection_rate'])}% (n = {b['n']})" for b in v["by_size"])
-        lines.append(f"- Accuracy on a sealed test half of hand-marked check points that was never used for tuning "
+        by_size = ", ".join(f"{b['size']} {_pct(b['detection_rate'])}% (n = {b['n']})" if b["n"] >= MIN_N_TO_SCORE
+                            else f"{b['size']}: n = {b['n']}, too few to score" for b in v["by_size"])
+        lines.append(f"- Accuracy on a sealed test half of check points that was never used for tuning "
                      f"({v['n_test_landslide']} landslide points, {v['n_test_forest']} forest points): found **{_pct(v['detection_rate'])}%**, "
                      f"false alarms **{_pct(v['false_alarm_rate'])}%**, AUC **{v['auc']:.2f}** (0.5 = guessing, 1.0 = perfect)."
                      + (f" Found by landslide size: {by_size}." if by_size else ""))
@@ -42,6 +44,9 @@ def results_block(stats: dict) -> str:
         lines.append("- Accuracy check: not run yet.")
     lines.append(f"- On two passes before the quake the same method flagged {_pct(stats['baseline_no_change_flag_rate'], 1)}% of forested "
                  f"slopes, against {_pct(stats['post_event_flag_rate'], 1)}% after the quake.")
+    if stats["baseline_no_change_flag_rate"] >= stats["post_event_flag_rate"]:
+        lines.append("- **Caution:** the method flagged more change before the quake than after it. Natural change between two "
+                     "passes is as large as the landslide signal at this setting, so single detections are weak evidence.")
     p = stats["params"]
     lines.append(f"- Settings: drop threshold {p['threshold_db']:g} dB, minimum slope {p['min_slope_deg']:g}°, "
                  f"pixel size {stats['pixel_m']:g} m.")

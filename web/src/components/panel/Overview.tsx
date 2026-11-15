@@ -77,6 +77,9 @@ export function Overview() {
           </p>
         </>
       )}
+      {s && s.baseline_no_change_flag_rate >= s.post_event_flag_rate && (
+        <p role="note" className="rounded border border-amber-300 bg-amber-50 p-2 text-sm text-amber-900">{C.overview.weak}</p>
+      )}
       <p className="text-sm text-slate-600">{C.overview.footnote}</p>
     </section>
   );

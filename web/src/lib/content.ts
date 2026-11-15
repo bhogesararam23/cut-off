@@ -58,13 +58,14 @@ export const C = {
       "Clouds and forest hid Panama's landslides from normal satellites. NISAR's radar sees through both. Its first pass came {hours} hours after the quake. We compared it with a pass {days} days earlier and looked for forest that suddenly lost its radar signal.",
     cards: {
       landslides: 'candidate landslides',
-      area: 'of slopes stripped',
+      area: 'of candidate landslide area',
       roads: 'of road likely blocked',
       communities: 'communities possibly cut off',
     },
     howSure:
       'How sure are we? On check points we never tuned on, it found {detection_rate}% of mapped landslides and wrongly flagged {false_alarm_rate}% of intact forest points.',
     noValidation: 'Accuracy check not run yet.',
+    weak: 'Weak evidence: in our own check this method was only a little better than guessing, and it flags as much change before the quake as after. See the Evidence tab.',
     footnote: 'All results are from radar processed in advance. This is a research demo, not an official warning.',
     notAvailable: 'Not available yet',
   },
@@ -98,17 +99,20 @@ export const C = {
     heading: 'How we checked',
     // The total number of marked points is not in the data files, so the sentence leaves it out.
     method:
-      'We hand-marked points on Sentinel-2 photos from before and after the quake: real landslide scars and untouched forest. We split them in half at random. We tuned on one half and tested once on the other half, which we never looked at while tuning.',
+      'We marked check points on Sentinel-2 images from before and after the quake: fresh landslide scars and untouched forest. An AI tool suggested candidates from the change in vegetation greenness, and every point was checked by eye. The radar was never used to pick them. We split them in half at random, tuned on one half and tested once on the other half, which we never looked at while tuning.',
     results:
       'Test half: {n_test_landslide} landslides, {n_test_forest} forest points. Found {detection_rate}%. False alarms {false_alarm_rate}%. AUC {auc} (0.5 = guessing, 1.0 = perfect).',
     noValidation: 'Validation not run yet',
-    chart1Title: 'Bigger landslides are easier to see',
-    chart1Summary: 'Detection rate was {small}% for small, {medium}% for medium and {large}% for large scars.',
+    chart1Title: 'Detection by landslide size',
+    chart1Scored: '{size}: found {rate}% (n = {n})',
+    chart1TooFew: '{size}: n = {n}, too few to score',
+    baselineWarning:
+      'The method flagged more change before the quake than after it. At this setting, natural change between two passes (rain, soil moisture, farming) is as large as the landslide signal, so single detections here are weak evidence.',
     chart2Title: 'Radar signal at landslides vs intact forest',
-    chart2Summary: 'Before the quake both lines sit together. After it, the signal at landslides drops by about {drop} dB while forest stays flat.',
+    chart2Summary: 'After the quake, the signal at landslides drops by about {drop} dB while forest stays flat. These spots were selected because their signal dropped, so this shows the size of the drop, not proof of landslides.',
     // Used instead of the sentence above when the forest line moved too: the data must not be described as flat then.
     chart2SummaryNeutral:
-      'Before the quake both lines sit together. After it, the signal at landslides changes by about {drop} dB and at intact forest by about {forest_drop} dB.',
+      'After the quake, the signal at landslides changes by about {drop} dB and at intact forest by about {forest_drop} dB.',
     quakeLabel: 'Quake',
     atLandslides: 'At landslides',
     atForest: 'Intact forest',
@@ -129,7 +133,7 @@ export const C = {
     quote: '"At least dual-polarimetry (e.g., HH and HV) is required" to detect landslides with L-band radar. (Ohki et al., 2020)',
   },
   limits: {
-    heading: "What this can't tell you",
+    heading: "Limitations: what this can't tell you",
     items: [
       'It misses landslides narrower than about 3 pixels (roughly 30–60 m).',
       'Slopes facing away from the radar, or hidden behind ridges, are unknown (grey).',
@@ -139,6 +143,7 @@ export const C = {
       'Other things can lower the signal: logging, fields being cleared, very wet ground, radio interference. Using several passes cuts these down but not to zero.',
       'Most roads reopened within a week. This shows the first days, not today.',
       'This is a research demo built in 48 hours, not an official product or warning.',
+      'Our own accuracy check was weak (see the Evidence tab): the radar missed most of the check-point landslides, which are often narrower than its pixels. Treat every detection as a lead to verify, not a finding.',
     ],
   },
   timeline: { heading: 'Timeline', footer: 'Times in UTC.', empty: 'No timeline entries.' },
