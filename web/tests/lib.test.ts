@@ -1,6 +1,7 @@
 // Tests for the text and number helpers: every displayed value is formatted from data, never invented.
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { dataFileUrl } from '../src/lib/assets.ts';
 import { C, fill } from '../src/lib/content.ts';
 import {
   daysBetween, fmtArea, fmtDay, fmtDayLong, fmtDayYear, fmtDateTime, fmtNumber, fmtPercent, hoursBetween,
@@ -49,4 +50,9 @@ test('required wording rules hold in the app text', () => {
   assert.equal(C.popups.status.blocked, 'Likely blocked');
   assert.equal(C.popups.status.cut_off, 'Possibly cut off');
   assert.equal(C.legend.communities.cut_off, 'Possibly cut off');
+});
+
+test('images always come from the site data folder, even when the API names an absolute address', () => {
+  assert.equal(dataFileUrl('/data/panama-2026', 'hv_t141d_20261009.png'), '/data/panama-2026/hv_t141d_20261009.png');
+  assert.equal(dataFileUrl('/data/panama-2026', 'https://api.example.com/static/panama-2026/hv_t141d_20261009.png'), '/data/panama-2026/hv_t141d_20261009.png');
 });

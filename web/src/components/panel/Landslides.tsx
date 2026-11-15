@@ -14,8 +14,7 @@ const selectClass =
   'rounded border border-slate-300 bg-white px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500';
 
 export function Landslides() {
-  const { landslides, stats: statsState } = useData();
-  const stats = ready(statsState);
+  const { landslides } = useData();
   const { focusFeature, selected } = useApp();
   const [filter, setFilter] = useState<ConfidenceFilter>('all');
   const [sort, setSort] = useState<SortKey>('size');
@@ -49,7 +48,7 @@ export function Landslides() {
               </select>
             </label>
           </div>
-          <p className="text-xs text-slate-600">{fill(C.landslides.supportHelp, { auc: fmtNumber(stats?.validation?.auc, 2) })}</p>
+          <p className="text-xs text-slate-600">{C.landslides.supportHelp}</p>
 
           {rows.length === 0 ? (
             <p className="text-[15px] text-slate-700">{C.landslides.empty}</p>

@@ -21,7 +21,7 @@ export function Timeline() {
               <li key={`${t.time_utc}${t.label}`} className="relative text-[15px]">
                 <span aria-hidden="true" className="absolute -left-[1.4rem] top-1.5 h-2.5 w-2.5 rounded-full bg-slate-600" />
                 <time dateTime={t.time_utc} className="block text-xs text-slate-600">{fmtDateTime(t.time_utc)}</time>
-                {t.label} <span className="text-xs text-slate-500">({t.source})</span>
+                {t.label} <span className="text-xs text-slate-600">({t.source})</span>
               </li>
             ))}
         </ol>

@@ -54,6 +54,7 @@ export function RoadsStep() {
           ))}
         </dl>
       )}
+      {km && <p className="text-xs text-ink/80">{C.explorer.roadsNote}</p>}
       <h3 className="pt-2 text-sm font-semibold">{C.explorer.downloads}</h3>
       <ul className="text-sm">
         {FILES.map((f) => (

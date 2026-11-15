@@ -36,7 +36,18 @@ def _score_line(v: dict, label: str) -> str:
             f"(0.5 = guessing, 1.0 = perfect)." + (f" Found by landslide size: {by_size}." if by_size else ""))
 
 
-def results_block(stats: dict) -> str:
+def community_counts(communities: dict | None) -> dict | None:
+    """Counts by status from communities.geojson, or None if the file is not available."""
+    if not communities:
+        return None
+    counts = {"cut_off": 0, "reachable": 0, "unknown": 0}
+    for f in communities.get("features", []):
+        st = f["properties"]["status"]
+        counts[st] = counts.get(st, 0) + 1
+    return counts
+
+
+def results_block(stats: dict, communities: dict | None = None) -> str:
     """Markdown for the results section, built only from the values in stats.json."""
     if stats.get("mock"):
         raise ReportError("stats.json is mock data: run the real processing first, then write the results")
@@ -48,8 +59,10 @@ def results_block(stats: dict) -> str:
     lines.append(f"- **{stats['landslides']:,}** candidate landslides (connected patches of flagged radar pixels) covering "
                  f"**{stats['area_km2']:,.2f} km²** of forested slopes. A candidate is a lead, not a confirmed landslide.")
     if stats.get("roads_blocked_km") is not None and stats.get("communities_cut_off") is not None:
+        counts = community_counts(communities)
+        of = (f" (of {sum(counts.values()):,} mapped places: {counts['reachable']:,} reachable, {counts['unknown']:,} unknown)" if counts else "")
         lines.append(f"- **{stats['roads_blocked_km']:,.1f} km** of road likely blocked and **{stats['communities_cut_off']:,}** "
-                     "communities possibly cut off (inferred from candidate landslides next to roads; nobody saw the blockages).")
+                     f"communities possibly cut off{of}; inferred from candidate landslides next to roads, nobody saw the blockages.")
     else:
         lines.append("- Roads likely blocked and communities possibly cut off: not computed yet.")
     v, v0 = stats.get("validation"), stats.get("validation_original")
@@ -58,6 +71,8 @@ def results_block(stats: dict) -> str:
         if v0:
             lines.append(_score_line(v0, "Held-out point split, first scoring, original method"))
             lines.append("- " + TWICE_NOTE)
+            lines.append("- The two AUC values use different scoring rules: the first reads one pass at the point; the revised one "
+                         "averages four passes, each taking the strongest drop within one pixel (20 m) of the point.")
         lines.append("- " + SPLIT_NOTE)
     else:
         lines.append("- Accuracy check: not run yet.")
@@ -70,7 +85,8 @@ def results_block(stats: dict) -> str:
     p = stats["params"]
     window = (f", local-mean window {p['highpass_px']} pixels ({p['highpass_px'] * stats['pixel_m']:g} m)" if p.get("highpass_px", 0) > 1 else "")
     lines.append(f"- Settings: drop threshold {p['threshold_db']:g} dB below the local mean{window}, minimum slope {p['min_slope_deg']:g}°, "
-                 f"minimum patch {p['min_pixels']} pixels, pixel size {stats['pixel_m']:g} m.")
+                 f"forest test: HV before at least {p['min_forest_hv_db']:g} dB, minimum patch {p['min_pixels']} pixels, "
+                 f"pixel size {stats['pixel_m']:g} m.")
     lines.append("")
     lines.append("All results come from radar processed in advance. This is a research demo, not an official warning.")
     return "\n".join(lines)
@@ -81,7 +97,9 @@ def update_readme(readme: Path, stats_path: Path) -> str:
     readme, stats_path = Path(readme), Path(stats_path)
     if not stats_path.is_file():
         raise ReportError(f"stats file not found: {stats_path}")
-    block = results_block(json.loads(stats_path.read_text(encoding="utf-8")))
+    comm_path = stats_path.parent / "communities.geojson"
+    communities = json.loads(comm_path.read_text(encoding="utf-8")) if comm_path.is_file() else None
+    block = results_block(json.loads(stats_path.read_text(encoding="utf-8")), communities)
     text = readme.read_text(encoding="utf-8")
     if text.count(START) != 1 or text.count(END) != 1 or text.index(START) > text.index(END):
         raise ReportError(f"{readme.name} needs exactly one '{START}' line followed by one '{END}' line")

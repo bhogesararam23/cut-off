@@ -1,5 +1,5 @@
-// Colours, basemap and layer ids for the map. Colour is never the only signal: blocked roads are dashed
-// and cut-off communities have a ring.
+// Colours, basemap and layer ids for the map. Colour is never the only signal: likely blocked roads are dashed
+// and possibly cut off communities have a ring.
 import type { MapOptions } from 'maplibre-gl';
 
 export const GIBS_TILES =

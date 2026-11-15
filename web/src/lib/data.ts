@@ -1,6 +1,7 @@
 // Loads the output files. By default they are static files; if VITE_API_URL is set the API is tried first
 // and the static files are the fallback, so a sleeping or broken API never breaks the app.
 
+import { dataFileUrl } from './assets.ts';
 import type {
   Communities, EventInfo, Landslides, Pair, Roads, Stats, TimelineItem, UnknownAreas,
 } from './types.ts';
@@ -23,9 +24,10 @@ export async function getJson<T>(name: string, apiPath: string): Promise<T> {
   return (await r.json()) as T;
 }
 
-/** URL of an image named in pairs.json: absolute URLs (from the API) are kept, names are looked up in the data folder. */
+/** URL of an image named in pairs.json. Images always come from the site's own data folder (the API's absolute
+ *  image addresses are reduced to the file name), so the API is only asked for JSON and sets no cookie on images. */
 export function assetUrl(name: string): string {
-  return /^https?:\/\//.test(name) ? name : `${STATIC_BASE}/${name}`;
+  return dataFileUrl(STATIC_BASE, name);
 }
 
 export interface FileSpec<T> {

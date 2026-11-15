@@ -93,6 +93,7 @@ test('audit wording: no overclaims anywhere in the visible text', () => {
   assert.match(C.sure.splitNote, /random split of points within one study area/);
   assert.match(C.method.radarNote, /a change is a lead, not a confirmed landslide/);
   assert.match(C.landslides.supportHelp, /not the probability that a landslide happened/);
+  assert.doesNotMatch(C.landslides.supportHelp, /AUC|\d\.\d\d/);
   assert.deepEqual(Object.values(C.landslides.supportLabels), ['Seen in many passes', 'Seen in 2 passes', 'Seen in 1 pass']);
   assert.match(C.sure.baselineText, /20 Sep to 2 Oct 2026/);
   assert.match(C.sure.p2, /scored twice/);

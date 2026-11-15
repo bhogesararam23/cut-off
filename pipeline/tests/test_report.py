@@ -100,3 +100,11 @@ def test_a_failing_baseline_puts_the_plain_warning_first():
     first = text.splitlines()[0]
     assert "flags as much change without an earthquake as with one" in first and "weak evidence" in first
     assert "pre-event baseline" in text.lower() and "nothing happened" not in text
+
+
+def test_community_counts_and_the_forest_test_are_shown():
+    comms = {"features": [{"properties": {"status": s}} for s in ["cut_off"] * 7 + ["reachable"] * 30 + ["unknown"] * 3]}
+    text = results_block(REAL, comms)
+    assert "of 40 mapped places: 30 reachable, 3 unknown" in text
+    assert "forest test: HV before at least -16 dB" in text
+    assert "mapped places" not in results_block(REAL)
