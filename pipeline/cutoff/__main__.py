@@ -1,4 +1,4 @@
-"""Command line: python -m cutoff mock|check|list|run|validate|access --config config.json"""
+"""Command line: python -m cutoff mock|check|list|run|tune|validate|access|report --config config.json"""
 
 from __future__ import annotations
 
@@ -14,14 +14,14 @@ NOT_READY = ()
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="cutoff", description=__doc__)
-    parser.add_argument("command", choices=("mock", "check", "list", "run", "validate", "access", "report", "osm") + NOT_READY)
+    parser.add_argument("command", choices=("mock", "check", "list", "run", "tune", "validate", "access", "report", "osm") + NOT_READY)
     parser.add_argument("--config", help="config file (default: config.json, else config.example.json)")
     parser.add_argument("--root", help="repository root (default: parent of the config file's folder)")
     parser.add_argument("--out", help="output folder (default: 'out' from the config, under the root)")
     parser.add_argument("--work", help="work folder for intermediate files (default: 'work' from the config)")
     parser.add_argument("--pairs", help="run: only these pair ids, comma separated (the primary pair is required)")
     parser.add_argument("--clean", action="store_true", help="run: delete old hv_*.png files in the output folder first")
-    parser.add_argument("--force", action="store_true", help="validate: score the test half again (logged); normally refused")
+    parser.add_argument("--force", action="store_true", help="validate: score the held-out half again (logged); normally refused")
     parser.add_argument("--allow-uncommitted", action="store_true", help="validate: skip the check that the check points are committed")
     parser.add_argument("--restore", action="store_true", help="validate: put the stored test result back into stats.json without scoring")
     parser.add_argument("--readme", help="report: README file whose results block is rewritten (default: README.md in the root)")
@@ -122,6 +122,21 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  towns left out (not on the road map): {', '.join(summary['skipped_hubs'])}")
         return 0
 
+    if args.command == "tune":
+        from .validate import ValidationError, run_tuning
+
+        try:
+            best, _table, rule, _test = run_tuning(cfg, root, work=Path(args.work) if args.work else None,
+                                                   require_committed=not args.allow_uncommitted)
+        except (ValidationError, FileNotFoundError, ValueError) as e:
+            print(f"cannot tune: {e}", file=sys.stderr)
+            return 1
+        print(f"\nrule: {rule}")
+        print(f"chosen: window {best['highpass_px']} px, threshold {best['threshold_db']:g} dB (tuning half: AUC {best['tune_auc']:.3f}, "
+              f"found {100 * best['detection_rate']:.0f}%, false alarms {100 * best['false_alarm_rate']:.0f}%)")
+        print("the held-out half was not scored; this only picked settings (saved to the work folder)")
+        return 0
+
     if args.command == "validate":
         from .validate import ValidationError, restore_validation, run_validation
 
@@ -135,7 +150,7 @@ def main(argv: list[str] | None = None) -> int:
         except (ValidationError, FileNotFoundError, ValueError) as e:
             print(f"cannot validate: {e}", file=sys.stderr)
             return 1
-        print("\ntest half (never used for tuning)")
+        print("\nheld-out half (not used for tuning)")
         print(f"  landslide points {result['n_test_landslide']}, forest points {result['n_test_forest']}")
         print(f"  found {100 * result['detection_rate']:.0f}%, false alarms {100 * result['false_alarm_rate']:.0f}%, AUC {result['auc']:.2f}")
         for b in result["by_size"]:

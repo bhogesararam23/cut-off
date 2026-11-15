@@ -291,11 +291,13 @@ def write_mock(cfg: dict, out: str | Path) -> list[str]:
                         {"size": "medium", "n": 24, "detection_rate": 0.8},
                         {"size": "large", "n": 12, "detection_rate": 0.95}],
         },
+        "validation_original": None,
         "baseline_no_change_flag_rate": 0.004,
         "post_event_flag_rate": 0.031,
         "params": dict(cfg["detect"], threshold_db=float(cfg["detect"]["threshold_db"]),
                        min_slope_deg=float(cfg["detect"]["min_slope_deg"]),
-                       min_forest_hv_db=float(cfg["detect"]["min_forest_hv_db"])),
+                       min_forest_hv_db=float(cfg["detect"]["min_forest_hv_db"]),
+                       highpass_px=int(cfg["detect"].get("highpass_px", 0))),
         "pixel_m": float(cfg["target_res_m"]),
     }
     write_json(out / "stats.json", stats)

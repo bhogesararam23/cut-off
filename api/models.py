@@ -176,6 +176,7 @@ class StatsParams(Strict):
     min_slope_deg: float
     min_forest_hv_db: float
     min_pixels: int
+    highpass_px: int
 
 
 class Stats(Strict):
@@ -185,6 +186,7 @@ class Stats(Strict):
     roads_blocked_km: float | None
     communities_cut_off: int | None
     validation: Validation | None
+    validation_original: Validation | None
     baseline_no_change_flag_rate: float
     post_event_flag_rate: float
     params: StatsParams

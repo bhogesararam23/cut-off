@@ -158,9 +158,11 @@ export interface StatsParams {
   min_slope_deg: number;
   min_forest_hv_db: number;
   min_pixels: number;
+  /** size in pixels of the local-mean window that is subtracted from each pair's change (0 = off) */
+  highpass_px: number;
 }
 export const STATS_PARAMS_KEYS: Record<keyof StatsParams, true> = {
-  threshold_db: true, min_slope_deg: true, min_forest_hv_db: true, min_pixels: true,
+  threshold_db: true, min_slope_deg: true, min_forest_hv_db: true, min_pixels: true, highpass_px: true,
 };
 export interface SizeDetection {
   size: 'small' | 'medium' | 'large';
@@ -193,6 +195,8 @@ export interface Stats {
   communities_cut_off: number | null;
   /** null until validation has run */
   validation: ValidationStats | null;
+  /** the first scoring of the held-out half, with the original method (null if there was none) */
+  validation_original: ValidationStats | null;
   /** 0-1 */
   baseline_no_change_flag_rate: number;
   /** 0-1 */
@@ -201,7 +205,7 @@ export interface Stats {
   pixel_m: number;
 }
 export const STATS_KEYS: Record<keyof Stats, true> = {
-  mock: true, landslides: true, area_km2: true, roads_blocked_km: true, communities_cut_off: true, validation: true,
+  mock: true, landslides: true, area_km2: true, roads_blocked_km: true, communities_cut_off: true, validation: true, validation_original: true,
   baseline_no_change_flag_rate: true, post_event_flag_rate: true, params: true, pixel_m: true,
 };
 

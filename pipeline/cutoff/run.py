@@ -16,8 +16,8 @@ import numpy as np
 from rasterio.enums import Resampling
 
 from . import export
-from .detect import (DetectParams, candidate_mask, combine_votes, eligible_mask, flag_rate, otsu_threshold,
-                     polygonise, visible_mask)
+from .detect import (DetectParams, adjusted_change, candidate_mask, combine_votes, eligible_mask, flag_rate,
+                     otsu_threshold, polygonise, remove_small_patches, visible_mask)
 from .radar import align_to, median_speckle, power_to_db, read_raster, reference_grid, write_raster, Raster
 from .terrain import look_azimuth, shadow_layover, slope_aspect
 
@@ -37,6 +37,16 @@ def select_pairs(cfg: dict, pair_ids: list[str] | None) -> list[dict]:
     if not any(p["id"] == cfg["primary_pair"] for p in pairs):
         raise ValueError(f"the primary pair {cfg['primary_pair']} must be processed (it defines the grid)")
     return sorted(pairs, key=lambda p: p["id"] != cfg["primary_pair"])
+
+
+def compare_pair_id(cfg: dict, pairs: list[dict]) -> str:
+    """The after-the-quake pair the no-quake baseline is compared with: the one from the same track and direction
+    (same viewing geometry), else the primary pair."""
+    b = cfg["baseline"]
+    for p in pairs:
+        if p["track"] == b.get("track") and p["direction"] == b["direction"]:
+            return p["id"]
+    return pairs[0]["id"]
 
 
 def required_inputs(cfg: dict, pairs: list[dict]) -> list[str]:
@@ -81,9 +91,11 @@ def run(cfg: dict, root: Path, out: Path | None = None, work: Path | None = None
     tuned_file = work / "tuned.json"
     if use_tuned and tuned_file.is_file():
         # the threshold chosen on the tuning half of the check points replaces the starting value
-        tuned = float(json.loads(tuned_file.read_text(encoding="utf-8"))["threshold_db"])
-        params = replace(params, threshold_db=tuned)
-        log(f"using the tuned threshold {tuned:g} dB from the tuning step")
+        saved = json.loads(tuned_file.read_text(encoding="utf-8"))
+        tuned = float(saved["threshold_db"])
+        params = replace(params, threshold_db=tuned, highpass_px=int(saved.get("highpass_px", params.highpass_px)))
+        log(f"using the tuned threshold {tuned:g} dB from the tuning step"
+            + (f" and a local-mean window of {params.highpass_px} pixels" if params.highpass_px > 1 else ""))
     res = float(cfg["target_res_m"])
     fsize, incidence = int(cfg["filter_size"]), float(cfg["incidence_deg"])
     headings = cfg.get("headings", {})
@@ -120,20 +132,22 @@ def run(cfg: dict, root: Path, out: Path | None = None, work: Path | None = None
     db_cache: dict[str, np.ndarray] = {}
     otsu_first_guess = None
     post_rate = None
+    compare_id = compare_pair_id(cfg, pairs)
     for p in pairs:
         before, after = load_db(p["before_hv"]), load_db(p["after_hv"])
         dhv = (after - before).astype("float32")
         unknown = unknown_for(p["direction"])
         vis = visible_mask(before, after, unknown)
-        cand = candidate_mask(dhv, before, slope, unknown, params)
+        adj = adjusted_change(dhv, vis, params.highpass_px)                  # the change that detection looks at
+        cand = candidate_mask(adj, before, slope, unknown, params)
         elig = eligible_mask(before, slope, vis, params)
-        if p is primary:
+        if p["id"] == compare_id or p is primary:                            # primary is the fallback if the compare pair is not run
             post_rate = flag_rate(cand, elig)
-            otsu_first_guess = otsu_threshold(dhv, elig)
-        write_raster(work / f"dhv_{p['id']}.tif", Raster(dhv, transform, crs))
-        if p is primary:                                                     # inputs for tuning the threshold
-            write_raster(work / f"hvbefore_{p['id']}.tif", Raster(before, transform, crs))
-            write_raster(work / f"unknown_{p['id']}.tif", Raster(unknown.astype("float32"), transform, crs))
+        if p is primary:
+            otsu_first_guess = otsu_threshold(adj, elig)
+        write_raster(work / f"dhv_{p['id']}.tif", Raster(dhv, transform, crs))             # inputs for tuning and scoring
+        write_raster(work / f"hvbefore_{p['id']}.tif", Raster(before, transform, crs))
+        write_raster(work / f"unknown_{p['id']}.tif", Raster(unknown.astype("float32"), transform, crs))
         names = export.png_names(p)
         export.save_png(out / names["before_png"], export.png_hv(export.to_wgs84(before, transform, crs, bbox, res)))
         export.save_png(out / names["after_png"], export.png_hv(export.to_wgs84(after, transform, crs, bbox, res)))
@@ -152,12 +166,17 @@ def run(cfg: dict, root: Path, out: Path | None = None, work: Path | None = None
     b_before, b_after = load_db(b["before_hv"]), load_db(b["after_hv"])
     b_unknown = unknown_for(b["direction"])
     b_vis = visible_mask(b_before, b_after, b_unknown)
-    b_cand = candidate_mask((b_after - b_before).astype("float32"), b_before, slope, b_unknown, params)
+    b_dhv = (b_after - b_before).astype("float32")
+    b_cand = candidate_mask(adjusted_change(b_dhv, b_vis, params.highpass_px), b_before, slope, b_unknown, params)
     baseline_rate = flag_rate(b_cand, eligible_mask(b_before, slope, b_vis, params))
-    del b_before, b_after, b_vis, b_cand
+    write_raster(work / "dhv_baseline.tif", Raster(b_dhv, transform, crs))
+    write_raster(work / "hvbefore_baseline.tif", Raster(b_before, transform, crs))
+    write_raster(work / "unknown_baseline.tif", Raster(b_unknown.astype("float32"), transform, crs))
+    del b_before, b_after, b_vis, b_cand, b_dhv
 
     # combine the pairs and make polygons
     keep, _, _ = combine_votes(cands, visibles)
+    keep = remove_small_patches(keep, params.min_pixels)          # after voting, small leftovers are dropped too
     slides = polygonise(keep, cands, visibles, before16, after16, slope, transform)
     features = export.landslide_features(slides, crs, res)
     unknown_all = ~np.any(visibles, axis=0)
@@ -195,10 +214,11 @@ def run(cfg: dict, root: Path, out: Path | None = None, work: Path | None = None
     area_km2 = round(sum(f["properties"]["area_m2"] for f in features) / 1e6, 3)
     export.write_json(out / "stats.json", {
         "mock": False, "landslides": len(features), "area_km2": area_km2, "roads_blocked_km": None,
-        "communities_cut_off": None, "validation": None,
+        "communities_cut_off": None, "validation": None, "validation_original": None,
         "baseline_no_change_flag_rate": round(baseline_rate, 5), "post_event_flag_rate": round(post_rate, 5),
         "params": {"threshold_db": params.threshold_db, "min_slope_deg": params.min_slope_deg,
-                   "min_forest_hv_db": params.min_forest_hv_db, "min_pixels": params.min_pixels},
+                   "min_forest_hv_db": params.min_forest_hv_db, "min_pixels": params.min_pixels,
+                   "highpass_px": params.highpass_px},
         "pixel_m": res})
     export.write_json(out / "timeseries.json", series)
     export.write_json(out / "timeline.json", export.default_timeline(cfg))

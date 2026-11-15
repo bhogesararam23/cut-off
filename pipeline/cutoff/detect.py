@@ -13,7 +13,7 @@ from dataclasses import dataclass
 import numpy as np
 from affine import Affine
 from rasterio.features import shapes
-from scipy.ndimage import find_objects, label
+from scipy.ndimage import find_objects, label, uniform_filter
 from shapely.geometry import MultiPolygon, Polygon, shape
 from shapely.ops import unary_union
 from skimage.filters import threshold_otsu
@@ -27,11 +27,32 @@ class DetectParams:
     min_slope_deg: float = 10.0
     min_forest_hv_db: float = -16.0    # HV before the event must be at least this bright to count as forest
     min_pixels: int = 3                # smaller patches are removed
+    highpass_px: int = 0               # 0 = off. Otherwise each pair's change is measured against its own local mean (window in pixels)
 
     @classmethod
     def from_config(cls, detect: dict) -> "DetectParams":
         return cls(float(detect["threshold_db"]), float(detect["min_slope_deg"]),
-                   float(detect["min_forest_hv_db"]), int(detect["min_pixels"]))
+                   float(detect["min_forest_hv_db"]), int(detect["min_pixels"]), int(detect.get("highpass_px", 0)))
+
+
+def local_mean(x: np.ndarray, size: int) -> np.ndarray:
+    """size x size box mean that ignores NaN. Pixels with too little valid data around them stay NaN."""
+    ok = np.isfinite(x)
+    total = uniform_filter(np.where(ok, x, 0.0).astype("float32"), size, mode="nearest")
+    count = uniform_filter(ok.astype("float32"), size, mode="nearest")
+    out = np.where(count > 0.3, total / np.maximum(count, 1e-6), np.nan).astype("float32")
+    out[~ok] = np.nan
+    return out
+
+
+def adjusted_change(dhv_db: np.ndarray, visible: np.ndarray, highpass_px: int) -> np.ndarray:
+    """The change used for detection. With highpass_px > 1 the pair's own local mean change is subtracted, so a slow,
+    region-wide shift (wetter soil, calibration drift, viewing geometry) is not mistaken for a landslide.
+    Pixels the pair cannot see become NaN."""
+    seen = np.where(visible & np.isfinite(dhv_db), dhv_db, np.nan).astype("float32")
+    if highpass_px > 1:
+        seen = (seen - local_mean(seen, highpass_px)).astype("float32")
+    return seen
 
 
 def visible_mask(before_db: np.ndarray, after_db: np.ndarray, unknown: np.ndarray) -> np.ndarray:

@@ -1,0 +1,69 @@
+{
+  "threshold_db": -1.5,
+  "seed": 2026,
+  "n_tune_landslide": 57,
+  "n_tune_forest": 35,
+  "points_sha256": "e0e9e1fceae03a084ecb8b4fc3fd3f23d5f7a6adb1efb633de9e11e7a055ece9",
+  "table": [
+    {
+      "threshold_db": -1.5,
+      "detection_rate": 0.0877,
+      "false_alarm_rate": 0.0571,
+      "youden_j": 0.0306
+    },
+    {
+      "threshold_db": -2.0,
+      "detection_rate": 0.0175,
+      "false_alarm_rate": 0.0,
+      "youden_j": 0.0175
+    },
+    {
+      "threshold_db": -2.5,
+      "detection_rate": 0.0175,
+      "false_alarm_rate": 0.0,
+      "youden_j": 0.0175
+    },
+    {
+      "threshold_db": -3.0,
+      "detection_rate": 0.0175,
+      "false_alarm_rate": 0.0,
+      "youden_j": 0.0175
+    },
+    {
+      "threshold_db": -3.5,
+      "detection_rate": 0.0,
+      "false_alarm_rate": 0.0,
+      "youden_j": 0.0
+    },
+    {
+      "threshold_db": -4.0,
+      "detection_rate": 0.0,
+      "false_alarm_rate": 0.0,
+      "youden_j": 0.0
+    },
+    {
+      "threshold_db": -4.5,
+      "detection_rate": 0.0,
+      "false_alarm_rate": 0.0,
+      "youden_j": 0.0
+    },
+    {
+      "threshold_db": -5.0,
+      "detection_rate": 0.0,
+      "false_alarm_rate": 0.0,
+      "youden_j": 0.0
+    },
+    {
+      "threshold_db": -5.5,
+      "detection_rate": 0.0,
+      "false_alarm_rate": 0.0,
+      "youden_j": 0.0
+    },
+    {
+      "threshold_db": -6.0,
+      "detection_rate": 0.0,
+      "false_alarm_rate": 0.0,
+      "youden_j": 0.0
+    }
+  ]
+}

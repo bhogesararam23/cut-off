@@ -219,9 +219,9 @@ def scene(tmp_path):
     (raw / "places.geojson").write_text(json.dumps(places), encoding="utf-8")
     (out / "landslides.geojson").write_text(json.dumps(landslides), encoding="utf-8")
     (out / "unknown.geojson").write_text(json.dumps({"type": "FeatureCollection", "features": []}), encoding="utf-8")
-    stats = {"mock": False, "landslides": 1, "area_km2": 0.0, "roads_blocked_km": None, "communities_cut_off": None, "validation": None,
+    stats = {"mock": False, "landslides": 1, "area_km2": 0.0, "roads_blocked_km": None, "communities_cut_off": None, "validation": None, "validation_original": None,
              "baseline_no_change_flag_rate": 0.0, "post_event_flag_rate": 0.0,
-             "params": {"threshold_db": -3.0, "min_slope_deg": 10.0, "min_forest_hv_db": -16.0, "min_pixels": 3}, "pixel_m": 20.0}
+             "params": {"threshold_db": -3.0, "min_slope_deg": 10.0, "min_forest_hv_db": -16.0, "min_pixels": 3, "highpass_px": 0}, "pixel_m": 20.0}
     (out / "stats.json").write_text(json.dumps(stats), encoding="utf-8")
     return {"out": "out", "roads": "data/raw/roads.geojson", "places": "data/raw/places.geojson", "hubs": [hub]}
 

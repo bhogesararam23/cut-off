@@ -11,8 +11,8 @@ import synth_validate
 from cutoff.__main__ import main
 from cutoff.contract import check_dir
 from cutoff.run import run
-from cutoff.validate import (CheckPoint, ValidationError, auc, found_within, load_points, points_are_committed,
-                             restore_validation, run_validation, split_points)
+from cutoff.validate import (THRESHOLDS, CheckPoint, ValidationError, auc, choose_setting, found_within, load_points,
+                             points_are_committed, restore_validation, run_validation, split_points)
 
 
 # ---- pure pieces ----
@@ -122,10 +122,10 @@ def test_tuning_picks_the_threshold_that_separates_landslides_from_decoys(scene)
     result = validate(root, cfg)
     tuned = json.loads((root / "work" / "tuned.json").read_text(encoding="utf-8"))
     table = {r["threshold_db"]: r for r in tuned["table"]}
-    assert tuned["seed"] == 2026 and sorted(table, reverse=True) == [-1.5 - 0.5 * i for i in range(10)]
+    assert tuned["seed"] == 2026 and sorted(table, reverse=True) == sorted(THRESHOLDS, reverse=True)
     assert table[-1.5]["youden_j"] < 1.0 and table[-2.0]["youden_j"] < 1.0          # too sensitive: the decoys are flagged
     assert table[-6.0]["detection_rate"] < 1.0                                       # too strict: weaker landslides are missed
-    assert all(table[t]["youden_j"] == 1.0 for t in (-2.5, -3.0, -3.5, -4.0, -4.5))   # a plateau of perfect separation
+    assert all(table[t]["youden_j"] == 1.0 for t in (-2.5, -3.0, -4.0))              # a plateau of perfect separation
     assert tuned["threshold_db"] == -3.0                                              # ties go to the value nearest the default
     assert result["threshold_db"] == -3.0
 
@@ -139,7 +139,9 @@ def test_the_sealed_test_half_is_scored_into_stats(scene):
     assert v["split"] == "test" and v["n_test_landslide"] == 10 and v["n_test_forest"] == 12
     assert v["detection_rate"] == 1.0 and v["false_alarm_rate"] == 0.0 and v["auc"] == 1.0
     assert sum(b["n"] for b in v["by_size"]) == 10 and {b["size"] for b in v["by_size"]} == {"small", "medium", "large"}
-    assert "points_without_radar_coverage" not in v and set(v) == set(result) - {"points_without_radar_coverage"}
+    assert "points_without_radar_coverage" not in v and "auc_primary_pair_only" not in v
+    assert set(v) == set(result) - {"points_without_radar_coverage", "auc_primary_pair_only"}
+    assert stats["validation_original"] is None
     assert check_dir(root / "out") == []                                              # still follows the data format
 
 
@@ -196,8 +198,50 @@ def test_cli_validate_reports_problems_plainly(scene, capsys):
     root, cfg = scene
     config = synth_validate.synth.write_config(root, cfg)
     assert main(["validate", "--config", str(config), "--allow-uncommitted"]) == 0
-    assert "test half scored once" in capsys.readouterr().out
+    assert "held-out half scored" in capsys.readouterr().out
     assert main(["validate", "--config", str(config), "--allow-uncommitted"]) == 1
     assert "already been scored" in capsys.readouterr().err
     assert main(["validate", "--config", str(config), "--restore"]) == 0
     assert np.isclose(json.loads((root / "out" / "stats.json").read_text(encoding="utf-8"))["validation"]["auc"], 1.0)
+
+
+# ---- the held-out points never reach the tuning ----
+
+def test_tuning_receives_only_the_tuning_half(scene, monkeypatch):
+    import cutoff.validate as validate_module
+    root, cfg = scene
+    seen: list[list[str]] = []
+    real = validate_module.tune_method
+
+    def spy(inputs, tune_points, *args, **kwargs):
+        seen.append([p.id for p in tune_points])
+        return real(inputs, tune_points, *args, **kwargs)
+
+    monkeypatch.setattr(validate_module, "tune_method", spy)
+    validate(root, cfg)
+    tune, test = split_points(load_points(root / cfg["points"]))
+    assert seen == [[p.id for p in tune]]
+    assert not set(seen[0]) & {p.id for p in test}
+
+
+def test_the_selection_rule_needs_less_flagging_before_the_quake_than_after():
+    rows = [
+        {"highpass_px": 0, "threshold_db": -1.0, "tune_auc": 0.80, "youden_j": 0.5, "baseline_flag_rate": 0.05, "post_flag_rate": 0.03},   # best AUC but baseline flags more
+        {"highpass_px": 11, "threshold_db": -1.0, "tune_auc": 0.70, "youden_j": 0.2, "baseline_flag_rate": 0.01, "post_flag_rate": 0.03},
+        {"highpass_px": 11, "threshold_db": -2.0, "tune_auc": 0.70, "youden_j": 0.4, "baseline_flag_rate": 0.01, "post_flag_rate": 0.02},
+        {"highpass_px": 31, "threshold_db": -2.0, "tune_auc": 0.75, "youden_j": 0.4, "baseline_flag_rate": 0.01, "post_flag_rate": 0.30},   # flags too much
+    ]
+    best, rule = choose_setting(rows, max_post_share=0.05)
+    assert (best["highpass_px"], best["threshold_db"]) == (11, -2.0)
+    assert "before the quake" in rule
+    fallback, rule2 = choose_setting([rows[0]], max_post_share=0.05)                          # nothing qualifies: say so
+    assert fallback is rows[0] and "no setting" in rule2
+
+
+def test_tuning_alone_scores_nothing(scene):
+    from cutoff.validate import run_tuning
+    root, cfg = scene
+    best, table, rule, test = run_tuning(cfg, root, require_committed=False, log=lambda _: None)
+    assert (root / "work" / "tuned.json").is_file() and not (root / "work" / "validation_runs.json").exists()
+    assert not (root / "work" / "validation_result.json").exists()
+    assert len(test) == 22 and len(table) == len(THRESHOLDS)

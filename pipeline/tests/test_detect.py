@@ -150,3 +150,33 @@ def test_polygonise_falls_back_to_second_pair_for_statistics():
     slides = polygonise(keep, [np.zeros_like(cand), cand], vis, [nan, before], [nan, after],
                         np.full((n, n), 15.0, "float32"), transform)
     assert slides[0].props["dhv_db"] == -6.0 and slides[0].props["pairs_seen"] == 1 and slides[0].props["pairs_visible"] == 1
+
+
+# ---- removing the region-wide shift ----
+
+def test_local_mean_ignores_missing_pixels():
+    from cutoff.detect import local_mean
+    x = np.full((20, 20), -2.0, dtype="float32")
+    x[5:8, 5:8] = np.nan
+    m = local_mean(x, 5)
+    assert np.allclose(m[np.isfinite(x)], -2.0) and np.isnan(m[6, 6])
+
+
+def test_a_region_wide_drop_is_removed_but_a_local_one_stays():
+    from cutoff.detect import adjusted_change
+    dhv = np.full((60, 60), -2.0, dtype="float32")               # wet ground everywhere: 2 dB down
+    dhv[30:33, 30:33] = -6.0                                        # a small patch 4 dB below its surroundings
+    visible = np.ones((60, 60), bool)
+    raw = adjusted_change(dhv, visible, 0)
+    adj = adjusted_change(dhv, visible, 21)
+    assert raw[10, 10] == -2.0 and abs(adj[10, 10]) < 0.1            # the shift is gone far from the patch
+    assert adj[31, 31] < -3.0                                         # the patch is still clearly below its surroundings
+
+
+def test_unseen_pixels_stay_missing_after_the_correction():
+    from cutoff.detect import adjusted_change
+    dhv = np.zeros((30, 30), dtype="float32")
+    visible = np.ones((30, 30), bool)
+    visible[:, :5] = False
+    adj = adjusted_change(dhv, visible, 11)
+    assert np.isnan(adj[:, :5]).all() and np.isfinite(adj[:, 5:]).all()

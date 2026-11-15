@@ -11,7 +11,7 @@ REAL = {
                    "auc": 0.8123, "threshold_db": -3.5,
                    "by_size": [{"size": "small", "n": 10, "detection_rate": 0.4}, {"size": "large", "n": 12, "detection_rate": 0.9167}]},
     "baseline_no_change_flag_rate": 0.0042, "post_event_flag_rate": 0.0311,
-    "params": {"threshold_db": -3.5, "min_slope_deg": 10.0, "min_forest_hv_db": -16.0, "min_pixels": 3}, "pixel_m": 20.0,
+    "params": {"threshold_db": -3.5, "min_slope_deg": 10.0, "min_forest_hv_db": -16.0, "min_pixels": 3, "highpass_px": 0}, "pixel_m": 20.0,
 }
 
 

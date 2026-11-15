@@ -144,3 +144,17 @@ def test_cli_run_reports_missing_files_without_a_traceback(tmp_path, capsys):
     config = synth.write_config(tmp_path, cfg)
     assert main(["run", "--config", str(config)]) == 1
     assert "dem.tif" in capsys.readouterr().err
+
+
+def test_the_baseline_is_compared_with_the_pair_from_the_same_track():
+    from cutoff.run import compare_pair_id
+    cfg = {"baseline": {"track": 40, "direction": "descending"}}
+    pairs = [{"id": "t141d", "track": 141, "direction": "descending"}, {"id": "t40d", "track": 40, "direction": "descending"}]
+    assert compare_pair_id(cfg, pairs) == "t40d"
+    assert compare_pair_id(cfg, pairs[:1]) == "t141d"                 # no same-track pair: the primary pair
+
+
+def test_small_leftovers_after_voting_are_dropped(scene):
+    root, *_ = scene
+    features = load(root, "landslides.geojson")["features"]
+    assert features and all(f["properties"]["area_m2"] >= 3 * 20 * 20 for f in features)

@@ -159,7 +159,8 @@ COMMUNITY = {
 }
 OPTICAL = {"before_webp": is_str, "after_webp": is_str, "bounds": is_bounds, "before_caption": is_str,
            "after_caption": is_str, "attribution": is_str}
-STATS_PARAMS = {"threshold_db": is_num, "min_slope_deg": is_num, "min_forest_hv_db": is_num, "min_pixels": is_int}
+STATS_PARAMS = {"threshold_db": is_num, "min_slope_deg": is_num, "min_forest_hv_db": is_num, "min_pixels": is_int,
+                "highpass_px": is_int}
 STATS_BY_SIZE = {"size": one_of("small", "medium", "large"), "n": is_int, "detection_rate": is_num}
 STATS_VALIDATION = {
     "split": one_of("test"), "n_test_landslide": is_int, "n_test_forest": is_int,
@@ -168,7 +169,8 @@ STATS_VALIDATION = {
 }
 STATS = {
     "mock": is_bool, "landslides": is_int, "area_km2": is_num, "roads_blocked_km": is_num_or_null,
-    "communities_cut_off": is_int_or_null, "validation": lambda v: None, "baseline_no_change_flag_rate": is_num,
+    "communities_cut_off": is_int_or_null, "validation": lambda v: None, "validation_original": lambda v: None,
+    "baseline_no_change_flag_rate": is_num,
     "post_event_flag_rate": is_num, "params": lambda v: None, "pixel_m": is_num,
 }
 TIMESERIES = {"date": is_iso, "track": is_int, "direction": one_of(*DIRECTIONS),
@@ -364,14 +366,16 @@ def check_dir(folder: str | Path) -> list[str]:
     stats = _load(folder, "stats.json", errors)
     if stats is not None and exact_keys(stats, STATS, "stats.json", errors):
         exact_keys(stats["params"], STATS_PARAMS, "stats.json.params", errors)
-        if stats["validation"] is not None:
-            if exact_keys(stats["validation"], {**STATS_VALIDATION, "by_size": lambda v: None}, "stats.json.validation", errors):
-                by_size = stats["validation"]["by_size"]
-                if not isinstance(by_size, list):
-                    errors.append("stats.json.validation.by_size: expected a list")
+        for key in ("validation", "validation_original"):
+            block = stats[key]
+            if block is None:
+                continue
+            if exact_keys(block, {**STATS_VALIDATION, "by_size": lambda v: None}, f"stats.json.{key}", errors):
+                if not isinstance(block["by_size"], list):
+                    errors.append(f"stats.json.{key}.by_size: expected a list")
                 else:
-                    for i, item in enumerate(by_size):
-                        exact_keys(item, STATS_BY_SIZE, f"stats.json.validation.by_size[{i}]", errors)
+                    for i, item in enumerate(block["by_size"]):
+                        exact_keys(item, STATS_BY_SIZE, f"stats.json.{key}.by_size[{i}]", errors)
         if event is not None and isinstance(event, dict) and event.get("mock") != stats["mock"]:
             errors.append("stats.json.mock and event.json.mock must be equal")
 
