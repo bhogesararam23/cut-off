@@ -1,0 +1,23 @@
+{
+  "split": "test",
+  "n_test_landslide": 57,
+  "n_test_forest": 34,
+  "detection_rate": 0.3333,
+  "false_alarm_rate": 0.0,
+  "auc": 0.8633,
+  "threshold_db": -1.0,
+  "by_size": [
+    {
+      "size": "small",
+      "n": 30,
+      "detection_rate": 0.2
+    },
+    {
+      "size": "medium",
+      "n": 27,
+      "detection_rate": 0.4815
+    }
+  ],
+  "points_without_radar_coverage": 0,
+  "auc_primary_pair_only": 0.7064
+}

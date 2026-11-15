@@ -15,12 +15,14 @@ Clouds and forest hid Panama's landslides from normal satellites. NISAR's radar 
 ## Results
 
 <!-- results:start -->
-- **4,672** candidate landslides covering **10.41 km²** of forested slopes.
-- **46.1 km** of road likely blocked and **7** communities possibly cut off (inferred from landslides next to roads; nobody saw the blockages).
-- Accuracy on a sealed test half of check points that was never used for tuning (57 landslide points, 34 forest points): found **21%**, false alarms **3%**, AUC **0.55** (0.5 = guessing, 1.0 = perfect). Found by landslide size: small 13% (n = 30), medium 30% (n = 27).
-- On two passes before the quake the same method flagged 3.4% of forested slopes, against 1.8% after the quake.
-- **Caution:** the method flagged more change before the quake than after it. Natural change between two passes is as large as the landslide signal at this setting, so single detections are weak evidence.
-- Settings: drop threshold -1.5 dB, minimum slope 10°, pixel size 20 m.
+- **8,442** candidate landslides (connected patches of flagged radar pixels) covering **19.13 km²** of forested slopes. A candidate is a lead, not a confirmed landslide.
+- **92.2 km** of road likely blocked and **102** communities possibly cut off (inferred from candidate landslides next to roads; nobody saw the blockages).
+- Held-out point split, second scoring, revised method (57 landslide points, 34 forest points): found **33%**, false alarms **0%**, AUC **0.86** (0.5 = guessing, 1.0 = perfect). Found by landslide size: small 20% (n = 30), medium 48% (n = 27).
+- Held-out point split, first scoring, original method (57 landslide points, 34 forest points): found **21%**, false alarms **3%**, AUC **0.55** (0.5 = guessing, 1.0 = perfect). Found by landslide size: small 13% (n = 30), medium 30% (n = 27).
+- The held-out half was scored twice: first on the original method, then after the method was revised using the tuning half only. Both results are shown.
+- This is a random split of points within one study area, labelled from optical imagery and checked by eye. It is not independent geographic validation and not field validation; nearby points may share conditions.
+- Pre-event baseline (ordinary change between two passes before the quake, 20 Sep to 2 Oct 2026; rain, soil moisture, farming and vegetation can change over 12 days): the same method flagged 3.3% of forested slopes, against 4.8% in a pair spanning the quake from the same track.
+- Settings: drop threshold -1 dB below the local mean, local-mean window 11 pixels (220 m), minimum slope 10°, minimum patch 3 pixels, pixel size 20 m.
 
 All results come from radar processed in advance. This is a research demo, not an official warning.
 <!-- results:end -->

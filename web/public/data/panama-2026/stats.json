@@ -1,10 +1,31 @@
 {
   "mock": false,
-  "landslides": 4672,
-  "area_km2": 10.412,
-  "roads_blocked_km": 46.14,
-  "communities_cut_off": 7,
+  "landslides": 8442,
+  "area_km2": 19.126,
+  "roads_blocked_km": 92.2,
+  "communities_cut_off": 102,
   "validation": {
+    "split": "test",
+    "n_test_landslide": 57,
+    "n_test_forest": 34,
+    "detection_rate": 0.3333,
+    "false_alarm_rate": 0.0,
+    "auc": 0.8633,
+    "threshold_db": -1.0,
+    "by_size": [
+      {
+        "size": "small",
+        "n": 30,
+        "detection_rate": 0.2
+      },
+      {
+        "size": "medium",
+        "n": 27,
+        "detection_rate": 0.4815
+      }
+    ]
+  },
+  "validation_original": {
     "split": "test",
     "n_test_landslide": 57,
     "n_test_forest": 34,
@@ -25,13 +46,14 @@
       }
     ]
   },
-  "baseline_no_change_flag_rate": 0.03363,
-  "post_event_flag_rate": 0.01766,
+  "baseline_no_change_flag_rate": 0.03302,
+  "post_event_flag_rate": 0.04798,
   "params": {
-    "threshold_db": -1.5,
+    "threshold_db": -1.0,
     "min_slope_deg": 10.0,
     "min_forest_hv_db": -16.0,
-    "min_pixels": 3
+    "min_pixels": 3,
+    "highpass_px": 11
   },
   "pixel_m": 20.0
 }

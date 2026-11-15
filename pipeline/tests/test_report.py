@@ -18,15 +18,17 @@ REAL = {
 def test_every_number_comes_from_the_stats():
     text = results_block(REAL)
     for expected in ("1,234", "12.35 km²", "18.0 km", "7**", "40 landslide points", "45 forest points", "**72%**", "**9%**",
-                     "AUC **0.81**", "small 40% (n = 10)", "large 92% (n = 12)", "0.4%", "3.1%", "-3.5 dB", "20 m"):
+                     "AUC **0.81**", "small 40% (n = 10)", "large 92% (n = 12)", "0.4%", "3.1%", "3.5 dB", "20 m"):
         assert expected in text, expected
     assert "likely blocked" in text and "possibly cut off" in text
+    assert "random split of points within one study area" in text and "not field validation" in text
+    assert "sealed" not in text.lower() and "independent geographic validation and" in text
 
 
 def test_missing_parts_are_stated_not_invented():
     stats = dict(REAL, validation=None, roads_blocked_km=None, communities_cut_off=None)
     text = results_block(stats)
-    assert "not computed yet" in text and "Accuracy check: not run yet" in text
+    assert "not computed yet" in text and "Accuracy check: not run yet" in text and "random split" not in text
     assert "AUC" not in text and "km** of road" not in text
 
 
@@ -83,3 +85,18 @@ def test_tiny_groups_get_a_count_not_a_rate_and_a_bad_baseline_is_said():
     text = results_block(stats)
     assert "large: n = 1, too few to score" in text and "large 100%" not in text and "medium 50% (n = 20)" in text
     assert "Caution" in text and "Caution" not in results_block(REAL)
+
+
+def test_both_scorings_are_shown_and_the_twice_scored_note_is_there():
+    first = dict(REAL["validation"], detection_rate=0.2105, false_alarm_rate=0.0294, auc=0.5459)
+    text = results_block(dict(REAL, validation_original=first))
+    assert "first scoring, original method" in text and "second scoring, revised method" in text
+    assert "**21%**" in text and "**72%**" in text and "scored twice" in text and "tuning half only" in text
+    assert "scored twice" not in results_block(REAL)
+
+
+def test_a_failing_baseline_puts_the_plain_warning_first():
+    text = results_block(dict(REAL, baseline_no_change_flag_rate=0.02, post_event_flag_rate=0.01))
+    first = text.splitlines()[0]
+    assert "flags as much change without an earthquake as with one" in first and "weak evidence" in first
+    assert "pre-event baseline" in text.lower() and "nothing happened" not in text
