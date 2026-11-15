@@ -33,8 +33,11 @@ Append-only. No AI-generated images or video are used.
 | 2026-11-14 | AI coding assistant | Final-phase checks: scans for unqualified wording, logos, personal data and mock flags; dependency audits; walk-through of the production build; fixed an unqualified word in the page title | `web/index.html`, `web/src/lib/content.ts` | Browser walk-through at laptop and phone widths; npm audit and pip-audit clean |
 | 2026-11-14 | AI coding assistant | Command that cuts roads and places for the study area out of an OpenStreetMap extract; news-reported places are now also matched when OpenStreetMap uses a longer name (for example "La Loma de Quebro") | `pipeline/cutoff/osm.py`, `access.py`, tests | Unit tests; run on the real extract (10,326 road lines, 460 places) and read back with the pipeline's own readers |
 | 2026-11-15 | AI coding assistant | Wording fix for runs with several pairs: the overview story and the timeline now use the earliest post-quake pass, not the first pair listed | `pipeline/cutoff/export.py`, `web/src/components/panel/Overview.tsx`, tests | Unit tests; type check and build |
+| 2026-11-15 | AI coding assistant | Real processing run on nine NISAR files (four pairs and a no-quake baseline); diagnosis of the weak result (coverage, natural change, scale) without changing any setting | real output files in `web/public/data/panama-2026/` | Format checker; change maps looked at by eye; the failing baseline check is reported, not hidden |
+| 2026-11-15 | AI tool (labelling aid) | Suggested candidate check points from Sentinel-2 NDVI change | `data/validation/points.csv` (183 points) | Every point checked by eye by the team; radar values not used; committed before scoring |
+| 2026-11-15 | AI coding assistant | Ran the accuracy validation once (threshold from the tuning half, sealed half scored once), road and community step, README results block; added a rule that size groups under 5 points get no rate, and weak-evidence notes in the app | `stats.json`, `roads.geojson`, `communities.geojson`, `README.md`, `docs/method.md` | One scoring logged; spot-check of blocked roads and cut-off communities against the landslide layer; all tests and the build pass |
 
 Summary for the submission form (update at the end):
-- Tools: AI chat assistant, AI coding assistant.
+- Tools: AI chat assistant, AI coding assistant, AI labelling aid for the check points.
 - Used for: planning and specifications, code generation and review, documentation, text drafts.
-- Not used for: data, results, images or video presented as real.
+- Not used for: results, images or video presented as real. AI suggested check points; each was confirmed by eye.

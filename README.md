@@ -1,19 +1,28 @@
 # Cut Off
 
-NISAR L-band radar finds the roads Panama's 2026 landslides likely blocked.
+An open, honest test: can NISAR L-band radar find Panama's 2026 earthquake landslides and the roads they likely blocked?
 
-Live app: {url} · Video: {url} · NASA Space Apps 2026, "Dancing with the SARs"
+Live app: {url} · NASA Space Apps 2026, "Dancing with the SARs"
+
+The website reads the result files it ships with (`web/public/data/`). A small read-only API (`api/`) can serve the same files, but it is not deployed: the site does not need it.
 
 ## What it does
 
-Clouds and forest hid Panama's landslides from normal satellites. NISAR's radar sees through both. We compared radar images from before and after the magnitude 7.7 earthquake of 9 October 2026 and looked for forest that suddenly lost its radar signal. Those candidate landslides are then joined to the open road map to show which roads were likely blocked and which communities were possibly cut off, with how sure we are and what the radar cannot see.
+Clouds and forest hid Panama's landslides from normal satellites. NISAR's radar sees through both. We compared radar images from before and after the magnitude 7.7 earthquake of 9 October 2026 and looked for forest that suddenly lost its radar signal. Those candidate landslides are joined to the open road map to show which roads were likely blocked and which communities were possibly cut off.
 
-This is a research demo for the first days after a disaster. It is not an official warning, and nobody saw the blockages: "likely blocked" is inferred from a landslide lying next to a road.
+**What we found, plainly:** with this simple method the radar evidence is weak. On our own sealed check it found about a fifth of the marked landslides and was only a little better than guessing, and it flags as much change before the quake as after. The app shows the candidates, the test, and the limits side by side. It is a research demo, not an official warning, and nobody saw the blockages: "likely blocked" is inferred from a candidate landslide lying next to a road.
 
 ## Results
 
 <!-- results:start -->
-Results will appear here once the real data has been processed.
+- **4,672** candidate landslides covering **10.41 km²** of forested slopes.
+- **46.1 km** of road likely blocked and **7** communities possibly cut off (inferred from landslides next to roads; nobody saw the blockages).
+- Accuracy on a sealed test half of check points that was never used for tuning (57 landslide points, 34 forest points): found **21%**, false alarms **3%**, AUC **0.55** (0.5 = guessing, 1.0 = perfect). Found by landslide size: small 13% (n = 30), medium 30% (n = 27).
+- On two passes before the quake the same method flagged 3.4% of forested slopes, against 1.8% after the quake.
+- **Caution:** the method flagged more change before the quake than after it. Natural change between two passes is as large as the landslide signal at this setting, so single detections are weak evidence.
+- Settings: drop threshold -1.5 dB, minimum slope 10°, pixel size 20 m.
+
+All results come from radar processed in advance. This is a research demo, not an official warning.
 <!-- results:end -->
 
 ## How it works
@@ -27,7 +36,7 @@ The full method, with every parameter and granule ID, is in [docs/method.md](doc
 
 ## Accuracy
 
-We hand-marked points on Sentinel-2 photos from before and after the quake: real landslide scars and untouched forest. We split them in half at random, tuned the detection threshold on one half, and tested once on the other half, which we never looked at while tuning. We also ran the same method on two passes from before the quake, to see how much it flags when nothing happened. The numbers are in the Results section above and in the app's Evidence tab. A poor result is reported as it is.
+We marked 183 check points on Sentinel-2 images from before and after the quake: fresh landslide scars and untouched forest. An AI tool suggested candidates from the change in vegetation greenness, and every point was checked by eye; the radar was never used to pick them. The file was committed before anything was scored. We split the points in half at random, tuned the detection threshold on one half, and tested once on the other half, which we never looked at while tuning. We also ran the same method on two passes from before the quake, to see how much it flags when nothing happened. The numbers are in the Results section above and in the app's Evidence tab. A poor result is reported as it is.
 
 ## Limits
 
@@ -39,6 +48,7 @@ We hand-marked points on Sentinel-2 photos from before and after the quake: real
 6. Other things can lower the signal: logging, fields being cleared, very wet ground, radio interference. Using several passes cuts these down but not to zero.
 7. Most roads reopened within a week. This shows the first days, not today.
 8. This is a research demo built in 48 hours, not an official product or warning.
+9. Our own accuracy check was weak (see Results): the radar missed most of the check-point landslides, which are often narrower than its pixels. Treat every detection as a lead to verify, not a finding.
 
 ## Run it
 
