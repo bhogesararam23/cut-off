@@ -54,7 +54,7 @@ The first should answer `{"status":"ok","version":"0.1.0"}`. If the API fails, `
 ## Live addresses
 - Website: https://cut-off.bhogesara-ram23.workers.dev
 - API: https://cutoff-api-26-ram26.azurewebsites.net (`/api/health`, interactive docs at `/docs`). Its allowed CORS origin is the website's address above.
-- For the website to read its data through the API, set `VITE_API_URL=https://cutoff-api-26-ram26.azurewebsites.net` as a build variable where the site is built. Without it the website uses the files it ships with, which are the same files.
+- The website is built by Cloudflare from this repository (Workers Builds: root directory `web`, deploy command `npx wrangler deploy --assets=dist`, branch `main`). The Cloudflare GitHub app needs access to this repository, and the build variable `VITE_API_URL=https://cutoff-api-26-ram26.azurewebsites.net` (not secret) makes the site read its data through the API. Without it the website uses the files it ships with, which are the same files.
 
 ## Before submitting
 - Check that the live website shows the same numbers as `stats.json` in this repository (the key facts at the top of the page).
